@@ -339,6 +339,16 @@
 								<b>Accueil</b>
 							</a>
 						</li>
+						{% set allowed_ids = ['e4e080b3758761bd01758f5fcfed03d9'] %}
+						{% if app.user.idclient and app.user.idclient.getId() in allowed_ids %}
+							<li class="nav-item" >
+								<a class="nav-link"  href="{{ path('app_notificationadmin', { 'id': client.id }) }}">
+									<b>Notifications</b>
+								</a>
+							</li>
+						{% endif %}
+
+
 						<li class="nav-item">
 							<a class="nav-link nav-link-custom" href="{{ path('app_tachesadmin') }}">
 								<b>Tâches</b>

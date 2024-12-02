@@ -1,4 +1,4 @@
-<?php 
+<?php
 // src/Controller/ClientController.php
 
 namespace App\Controller;
@@ -16,21 +16,28 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\Repository\ClientRepository;
+
 
 class ClientAdminController extends AbstractController
 {
     private $webTaskRepository;
     private $entityManager;
     private $notificationRepository;
+    private $clientRepository;
+
 
     public function __construct(
-        WebtaskRepository $webTaskRepository, 
-        EntityManagerInterface $entityManager, 
-        NotificationRepository $notificationRepository
+        WebtaskRepository $webTaskRepository,
+        EntityManagerInterface $entityManager,
+        NotificationRepository $notificationRepository,
+        ClientRepository $clientRepository
+
     ) {
         $this->webTaskRepository = $webTaskRepository;
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
+        $this->clientRepository = $clientRepository;
     }
 
     #[Route('/admin/client/create', name: 'app_createclientadmin')]
@@ -45,12 +52,21 @@ class ClientAdminController extends AbstractController
         }
 
         // Récupérer l'ID du client associé à l'utilisateur connecté
-        $idclient = $user->getIdclient(); 
+        $idclient = $user->getIdclient();
 
         // Vérifier si un client est associé à l'utilisateur
         if (!$idclient) {
             throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
         }
+
+        // Récupérer le client à partir de l'ID
+        $client = $this->clientRepository->find($idclient);
+
+        if (!$client) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+        // Récupérer les Webtasks associées à cet ID client
+        $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
 
         // Récupérer le logo du client
         $logo = null;
@@ -145,6 +161,10 @@ class ClientAdminController extends AbstractController
             'logo' => $logo,
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
+            'client' => $client,
+            'logo' => $logo,
+
+
         ]);
     }
 

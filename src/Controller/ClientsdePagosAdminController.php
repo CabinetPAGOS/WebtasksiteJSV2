@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+
 class ClientsdePagosAdminController extends AbstractController
 {
     private $webTaskRepository;
@@ -25,6 +26,8 @@ class ClientsdePagosAdminController extends AbstractController
     private $userRepository;
     private $entityManager;
     private $notificationRepository;
+    private $clientRepository;
+
 
     public function __construct(
         WebtaskRepository $webTaskRepository,
@@ -32,7 +35,9 @@ class ClientsdePagosAdminController extends AbstractController
         TextTransformer $textTransformer, 
         UserRepository $userRepository,
         EntityManagerInterface $entityManager, 
-        NotificationRepository $notificationRepository
+        NotificationRepository $notificationRepository,
+        ClientRepository $clientRepository
+
     ) {
         $this->webTaskRepository = $webTaskRepository;
         $this->versionService = $versionService;
@@ -40,6 +45,8 @@ class ClientsdePagosAdminController extends AbstractController
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
+        $this->clientRepository = $clientRepository;
+
     }
 
     #[Route('/admin/clientsdepagos', name: 'app_clientsdepagosadmin')]
@@ -60,6 +67,23 @@ class ClientsdePagosAdminController extends AbstractController
         if (!$idclient) {
             throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
         }
+
+        // Récupérer l'ID du client associé à l'utilisateur connecté
+        $idclient = $user->getIdclient();
+
+        // Vérifier si un client est associé à l'utilisateur
+        if (!$idclient) {
+            throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
+        }
+
+        // Récupérer le client à partir de l'ID
+        $client = $this->clientRepository->find($idclient);
+
+        if (!$client) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+        // Récupérer les Webtasks associées à cet ID client
+        $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
 
         // Récupérer le logo du client
         $logo = null;
@@ -146,6 +170,8 @@ class ClientsdePagosAdminController extends AbstractController
             'logo' => $logo,
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
+            'client' => $client,
+
         ]);
     }
 

@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ClientRepository;
+
 
 class TachesAdminController extends AbstractController
 {
@@ -22,19 +24,24 @@ class TachesAdminController extends AbstractController
     private $textTransformer;
     private $entityManager;
     private $notificationRepository;
+    private $clientRepository;
+
 
     public function __construct(
-        WebtaskRepository $webTaskRepository, 
-        VersionService $versionService, 
-        TextTransformer $textTransformer, 
-        EntityManagerInterface $entityManager, 
-        NotificationRepository $notificationRepository
+        WebtaskRepository $webTaskRepository,
+        VersionService $versionService,
+        TextTransformer $textTransformer,
+        EntityManagerInterface $entityManager,
+        NotificationRepository $notificationRepository,
+        ClientRepository $clientRepository
+
     ) {
         $this->webTaskRepository = $webTaskRepository;
         $this->versionService = $versionService;
         $this->textTransformer = $textTransformer;
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
+        $this->clientRepository = $clientRepository;
     }
 
     #[Route('/admin/taches', name: 'app_tachesadmin')]
@@ -55,6 +62,30 @@ class TachesAdminController extends AbstractController
             $webtasks = $this->webTaskRepository->findByClient($idclient);
         }
 
+        // Récupérer l'ID du client associé à l'utilisateur connecté
+        $idclient = $user->getIdclient();
+
+        // Vérifier si un client est associé à l'utilisateur
+        if (!$idclient) {
+            throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
+        }
+
+        // Récupérer le client à partir de l'ID
+        $client = $this->clientRepository->find($idclient);
+
+        if (!$client) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+
+        // Récupérer le logo du client
+        $logo = null;
+        if ($client->getLogo()) {
+            $logo = base64_encode(stream_get_contents($client->getLogo()));
+        }
+
+        // Récupérer les Webtasks associées à cet ID client
+        $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
+
         // Récupérer le logo du client
         $logo = null;
         if ($idclient->getLogo()) {
@@ -62,7 +93,7 @@ class TachesAdminController extends AbstractController
         }
 
         // Filtrer les tâches avec un état d'avancement 'ON'
-        $webtasksON = array_filter($webtasks, function($webtask) {
+        $webtasksON = array_filter($webtasks, function ($webtask) {
             return $webtask->getEtatDeLaWebtask() === 'ON';
         });
 
@@ -87,7 +118,7 @@ class TachesAdminController extends AbstractController
         }
 
         // Trier les pilotes par nom et prénom dans l'ordre croissant
-        uasort($pilotes, function($a, $b) {
+        uasort($pilotes, function ($a, $b) {
             // Comparer d'abord par le nom, puis par le prénom
             $nomComparison = strcmp($a['nom'], $b['nom']);
             if ($nomComparison === 0) {
@@ -106,7 +137,7 @@ class TachesAdminController extends AbstractController
 
         // Appliquer le filtre par statut d'avancement si spécifié
         if ($selectedAvancement !== 'all') {
-            $webtasksON = array_filter($webtasksON, function($webtask) use ($selectedAvancement) {
+            $webtasksON = array_filter($webtasksON, function ($webtask) use ($selectedAvancement) {
                 switch ($selectedAvancement) {
                     case 'nonPriseEnCompte':
                         return $webtask->getAvancementDeLaTache() === '0';
@@ -115,7 +146,7 @@ class TachesAdminController extends AbstractController
                     case 'terminee':
                         return $webtask->getAvancementDeLaTache() === '2';
                     case 'amelioration':
-                        return $webtask->getAvancementDeLaTache() === '3'; 
+                        return $webtask->getAvancementDeLaTache() === '3';
                     case 'refusee':
                         return $webtask->getAvancementDeLaTache() === '4';
                     case 'validee':
@@ -131,14 +162,14 @@ class TachesAdminController extends AbstractController
         }
 
         // Tri des tâches par date de fin demandée
-        usort($webtasksON, function($a, $b) {
+        usort($webtasksON, function ($a, $b) {
             $dateA = \DateTime::createFromFormat('d/m/Y', $a->getDateFinDemandee());
             $dateB = \DateTime::createFromFormat('d/m/Y', $b->getDateFinDemandee());
             return $dateA <=> $dateB;
         });
 
         // Préparation des données pour chaque tâche
-        $webtasksON = array_map(function($webtask) {
+        $webtasksON = array_map(function ($webtask) {
             $idVersion = $webtask->getIdversion();
 
             if ($idVersion === null) {
@@ -148,7 +179,7 @@ class TachesAdminController extends AbstractController
             }
 
             $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
-            
+
             $webtask->mappedTag = $this->mapTag($webtask->getTag());
             $webtask->tagClass = $this->getTagClass($webtask->getTag());
             $webtask->mappedAvancement = $this->mapAvancementDeLaTache($webtask->getAvancementdelatache());
@@ -180,6 +211,8 @@ class TachesAdminController extends AbstractController
             'logo' => $logo,
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
+            'client' => $client,
+
         ]);
     }
 

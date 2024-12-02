@@ -18,15 +18,11 @@ use App\Entity\Notification;
 use App\Repository\NotificationRepository;
 use App\Repository\WebtaskRepository;
 
-
-
-
 class PagesNotificationAdminController extends AbstractController
 {
     private $forumRepository;
     private $notificationRepository;
     private $webTaskRepository;
-
 
     public function __construct(
         ForumRepository $forumRepository,
@@ -41,7 +37,6 @@ class PagesNotificationAdminController extends AbstractController
     #[Route('/admin/notification', name: 'app_notificationadmin')]
     public function notificationadmin(Request $request, EntityManagerInterface $entityManager, NotificationRepository $notificationRepository, WebtaskRepository $webtaskRepository): Response
     {
-
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
 
@@ -98,6 +93,7 @@ class PagesNotificationAdminController extends AbstractController
             'idWebtaskMap' => $idWebtaskMap,
         ]);
     }
+    
     #[Route('/notifications', name: 'get_notifications', methods: ['GET'])]
     public function getNotifications(): JsonResponse
     {

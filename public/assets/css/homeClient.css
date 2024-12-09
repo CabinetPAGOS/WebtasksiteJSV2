@@ -380,3 +380,29 @@ hr {
     gap: 15px; /* Espace entre les boutons */
     margin-top: 20px;
 }
+
+.text-npc { color: #ff0000; font-weight: bold; }
+.text-pc { color: #ffc000; font-weight: bold; }
+.text-t { color: #00b050; font-weight: bold; }
+.text-a { color: #FF0000; font-weight: bold; background-color: #00C995; }
+.text-r { color: #ffffff; font-weight: bold; background-color: #000000; }
+.text-v { color: #04C49E; font-weight: bold; background-color: #000000; }
+.text-sc { color: #ffffff; font-weight: bold; background-color: #C92093; }
+.text-gc { color: #000000; font-weight: bold; background-color: #00B050; }
+
+/* Dropdown avancement personnalisé */
+.custom-dropdown .avancement-dropdown {
+    position: relative;
+}
+
+.avancement-dropdown .custom-filter-button {
+    margin-top: 30px;
+    margin-left : 40px;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}

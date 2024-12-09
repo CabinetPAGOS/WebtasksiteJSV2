@@ -95,15 +95,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->roleWX;
     }
 
-    public function setroleWX(string $roleWX): self
-    {
-        if (!in_array($roleWX, ['lecteur', 'createur'])) {
-            throw new \InvalidArgumentException("Le rôle utilisateur doit être 'lecteur' ou 'createur'.");
-        }
-        $this->roleWX = $roleWX;
-
-        return $this;
+    public function setRoleWX(string $roleWX): self
+{
+    // Ce rôle spécifique peut être 'lecteur' ou 'createur'
+    if (!in_array($roleWX, ['lecteur', 'createur'])) {
+        throw new \InvalidArgumentException("Le rôle utilisateur doit être 'lecteur' ou 'createur'.");
     }
+    $this->roleWX = $roleWX;
+    return $this;
+}
 
     public function getId(): ?string
     {
@@ -143,20 +143,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @see UserInterface
      */
     public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+{
+    $roles = $this->roles;
+    // Garantie que chaque utilisateur a au moins le rôle 'ROLE_USER'
+    $roles[] = 'ROLE_USER';
+    return array_unique($roles);
+}
 
-        return array_unique($roles);
+public function setRoles(array $roles): self
+{
+    // Assurez-vous que les rôles sont bien 'ROLE_USER' ou 'ROLE_ADMIN'
+    foreach ($roles as $role) {
+        if (!in_array($role, ['ROLE_ADMIN', 'ROLE_USER'])) {
+            throw new \InvalidArgumentException("Le rôle utilisateur doit être 'ROLE_ADMIN' ou 'ROLE_USER'.");
+        }
     }
-
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
-
-        return $this;
-    }
+    $this->roles = $roles;
+    return $this;
+}
+    
 
     /**
      * @see PasswordAuthenticatedUserInterface

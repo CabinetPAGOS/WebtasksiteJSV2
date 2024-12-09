@@ -26,8 +26,8 @@ class ReponseController extends AbstractController
     private $clientRepository;
 
     public function __construct(
-        TextTransformer $textTransformer, 
-        VersionService $versionService, 
+        TextTransformer $textTransformer,
+        VersionService $versionService,
         ClientRepository $clientRepository,
         WebtaskRepository $webTaskRepository,
         NotificationRepository $notificationRepository
@@ -78,19 +78,19 @@ class ReponseController extends AbstractController
         if ($client->getLogo()) {
             $logo = base64_encode(stream_get_contents($client->getLogo()));
         }
-        
+
         if ($request->isMethod('POST')) {
             // Créer une nouvelle tâche
             $newTache = new Webtask();
 
             // Générer le code automatique pour les tâches commençant par 'SWT-'
             $lastTaskWithSWTCode = $entityManager->getRepository(Webtask::class)->createQueryBuilder('w')
-            ->where('w.code LIKE :prefix')
-            ->setParameter('prefix', 'SWT-%')
-            ->orderBy('w.code', 'DESC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+                ->where('w.code LIKE :prefix')
+                ->setParameter('prefix', 'SWT-%')
+                ->orderBy('w.code', 'DESC')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult();
 
             if ($lastTaskWithSWTCode) {
                 // On extrait le numéro à partir de 'SWT-' et on l'incrémente
@@ -101,18 +101,48 @@ class ReponseController extends AbstractController
             }
             $newTache->setCode(sprintf('SWT-%06d', $newCodeNumber));
 
+            $fileLinks = [
+                $request->request->get('fileLink1', ''),
+                $request->request->get('fileLink2', ''),
+                $request->request->get('fileLink3', '')
+            ];
+
+            $fileTitles = [
+                $request->request->get('fileTitle1', ''),
+                $request->request->get('fileTitle2', ''),
+                $request->request->get('fileTitle3', '')
+            ];
+
+            // Initialiser la variable pour savoir s'il y a des documents attachés
+            $hasDocuments = false;
+
+            // Vérifier si au moins un des liens ou titres est renseigné
+            foreach ($fileLinks as $index => $fileLink) {
+                $fileTitle = $fileTitles[$index];
+
+                // Si un lien ou un titre est fourni, considérer que le document est attaché
+                if (!empty($fileLink) || !empty($fileTitle)) {
+                    $hasDocuments = true;
+                    break; // Si un document est trouvé, on arrête la boucle
+                }
+            }
+
+            // Mettre à jour la tâche avec le statut de documents attachés
+            $newTache->setDocumentsAttaches($hasDocuments ? '1' : '0');  // Stockage en tant que chaîne
+
+
             for ($i = 1; $i <= 3; $i++) {
                 $fileLink = $request->request->get("fileLink{$i}", "");   // lien de fichier
                 $fileTitle = $request->request->get("fileTitle{$i}", ""); // titre de fichier
-            
+
                 // Enregistrer uniquement le titre si le lien est vide, sinon les deux
                 $liendrive = !empty($fileTitle) ? "{$fileLink}?" . urlencode($fileTitle) : "";
-                
+
                 // Si seulement le titre est fourni sans lien
                 if (empty($fileLink) && !empty($fileTitle)) {
                     $liendrive = urlencode($fileTitle);
                 }
-            
+
                 // Appel dynamique du setter
                 $setter = "setLienDrive{$i}";
                 $newTache->$setter($liendrive);
@@ -120,6 +150,7 @@ class ReponseController extends AbstractController
 
             $areDocumentsAttaches = !empty($documentsAttaches[0]) || !empty($documentsAttaches[1]) || !empty($documentsAttaches[2]);
             $newTache->setDocumentsAttaches($areDocumentsAttaches);
+
 
             // Convertir la date en chaîne
             $dueDate = $request->request->get('due_date');
@@ -179,47 +210,47 @@ class ReponseController extends AbstractController
             );
             $newTache->setFiltre($filter); // Assurez-vous que la méthode setFiltre existe dans l'entité Webtask
 
-          // Persister les entités
-          $entityManager->persist($newTache);
-          $entityManager->flush();
+            // Persister les entités
+            $entityManager->persist($newTache);
+            $entityManager->flush();
 
-          // Récupérer tous les utilisateurs du client CABINET PAGOS
-          $cabinetPagosClient = $entityManager->getRepository(Client::class)
-          ->findOneBy(['raison_sociale' => 'CABINET PAGOS']);
+            // Récupérer tous les utilisateurs du client CABINET PAGOS
+            $cabinetPagosClient = $entityManager->getRepository(Client::class)
+                ->findOneBy(['raison_sociale' => 'CABINET PAGOS']);
 
-          $usersCabinetPagos = $cabinetPagosClient
-          ? $entityManager->getRepository(User::class)
-              ->findBy(['idclient' => $cabinetPagosClient])
-          : [];
+            $usersCabinetPagos = $cabinetPagosClient
+                ? $entityManager->getRepository(User::class)
+                ->findBy(['idclient' => $cabinetPagosClient])
+                : [];
 
-          // Récupérer tous les utilisateurs du client actuel
-          $usersCurrentClient = $entityManager->getRepository(User::class)
-          ->findBy(['idclient' => $client]);
+            // Récupérer tous les utilisateurs du client actuel
+            $usersCurrentClient = $entityManager->getRepository(User::class)
+                ->findBy(['idclient' => $client]);
 
-          // Fusionner les listes d'utilisateurs sans doublons
-          $allUsers = array_unique(array_merge($usersCabinetPagos, $usersCurrentClient), SORT_REGULAR);
+            // Fusionner les listes d'utilisateurs sans doublons
+            $allUsers = array_unique(array_merge($usersCabinetPagos, $usersCurrentClient), SORT_REGULAR);
 
-          // Créer une notification pour chaque utilisateur, sauf l'utilisateur connecté
-          foreach ($allUsers as $userNotification) {
-          if ($userNotification === $user) {
-              continue; // Ignorer l'utilisateur connecté
-          }
+            // Créer une notification pour chaque utilisateur, sauf l'utilisateur connecté
+            foreach ($allUsers as $userNotification) {
+                if ($userNotification === $user) {
+                    continue; // Ignorer l'utilisateur connecté
+                }
 
-          $notification = new Notification();
-          $notification->setMessage('Réponse à la WebTask : ' . $newTache->getLibelle());
-          $notification->setLibelleWebtask($newTache->getLibelle());
-          $notification->setDateCreation(new \DateTime());
-          $notification->setVisible(true);
-          $notification->setClient($newTache->getIdclient());
-          $notification->setTitreWebtask($newTache->getTitre());
-          $notification->setCodeWebtask($newTache->getCode());
-          $notification->setUser($userNotification);
+                $notification = new Notification();
+                $notification->setMessage('Réponse à la WebTask : ' . $newTache->getLibelle());
+                $notification->setLibelleWebtask($newTache->getLibelle());
+                $notification->setDateCreation(new \DateTime());
+                $notification->setVisible(true);
+                $notification->setClient($newTache->getIdclient());
+                $notification->setTitreWebtask($newTache->getTitre());
+                $notification->setCodeWebtask($newTache->getCode());
+                $notification->setUser($userNotification);
 
-          $entityManager->persist($notification);
-          }
+                $entityManager->persist($notification);
+            }
 
-          // Sauvegarder les notifications en base de données
-          $entityManager->flush();
+            // Sauvegarder les notifications en base de données
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_taches');
         }

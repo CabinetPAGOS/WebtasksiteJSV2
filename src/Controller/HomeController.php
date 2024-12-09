@@ -106,7 +106,6 @@ class HomeController extends AbstractController
 
             $avancementValue = $webtask->getAvancementDeLaTache();
             $mappedAvancement = $this->mapAvancementDeLaTache($avancementValue);
-            $webtask->setAvancementDeLaTache($mappedAvancement);
 
             $idVersion = $webtask->getIdversion();
             if ($idVersion === null) {
@@ -116,6 +115,8 @@ class HomeController extends AbstractController
             }
 
             $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
+            $webtask->mappedAvancement = $this->mapAvancementDeLaTache($webtask->getAvancementdelatache());
+
 
             return $webtask;
         }, $webtasks);
@@ -177,6 +178,8 @@ class HomeController extends AbstractController
         usort($lastModifiedStopClientWebtasks, function ($a, $b) {
             return $a->getDateFinDemandee() <=> $b->getDateFinDemandee();
         });
+
+
 
         $lastModifiedStopClientWebtasks = array_slice($lastModifiedStopClientWebtasks, 0, 3);
 
@@ -314,19 +317,19 @@ class HomeController extends AbstractController
         return isset($tags[$tag]) ? $tags[$tag] : 'Inconnu';
     }
 
-    private function mapAvancementDeLaTache(?string $avancement): string
+    private function mapAvancementDeLaTache(?int $avancement): array
     {
         $avancements = [
-            0 => 'Non Prise en Compte',
-            1 => 'Prise en Compte',
-            2 => 'Terminée',
-            3 => '❇️ Amélioration ❇️',
-            4 => '⛔️ Refusée ⛔',
-            5 => '✅ Validée',
-            6 => '❌ Stop Client ❌',
-            7 => '😃 Go Client 😃'
+            0 => ['label' => 'Non Prise en Compte', 'class' => 'text-npc'],
+            1 => ['label' => 'Prise en Compte', 'class' => 'text-pc'],
+            2 => ['label' => 'Terminée', 'class' => 'text-t'],
+            3 => ['label' => '❇️ Amélioration ❇️', 'class' => 'text-a'],
+            4 => ['label' => '⛔️ Refusée ⛔️', 'class' => 'text-r'],
+            5 => ['label' => '✅ Validée', 'class' => 'text-v'],
+            6 => ['label' => '❌ Stop Client ❌', 'class' => 'text-sc'],
+            7 => ['label' => '😃 Go Client 😃', 'class' => 'text-gc']
         ];
 
-        return isset($avancements[$avancement]) ? $avancements[$avancement] : 'Inconnu';
+        return $avancements[$avancement] ?? ['label' => 'Inconnu', 'class' => 'text-muted'];
     }
 }

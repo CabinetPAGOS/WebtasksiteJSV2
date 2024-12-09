@@ -52,6 +52,22 @@ function validateFileTitle() {
     }
 }
 
+function validateForm() {
+    let valid = true;
+    // Vérifiez que tous les champs de titre et lien sont remplis
+    for (let i = 1; i <= maxFiles; i++) {
+        const title = document.getElementById(`fileTitle${i}`).value;
+        const link = document.getElementById(`fileLink${i}`).value;
+
+        if (!title.trim() || !link.trim()) {
+            valid = false;
+            alert(`Veuillez remplir les champs pour le fichier ${i}`);
+            break;
+        }
+    }
+    return valid;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
     const yyyy = today.getFullYear();

@@ -1,183 +1,209 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion des utilisateurs - ADMIN{% endblock %}
+{% block title %}Gestion des utilisateurs - ADMIN
+{% endblock %}
 
 {% block head %}
 	<!-- CSS -->
-    <link href="{{ asset('./assets/css/gestionUserAdmin.css') }}" rel="stylesheet" />
+	<link href="{{ asset('./assets/css/gestionUserAdmin.css') }}" rel="stylesheet"/>
 {% endblock %}
 
 {% block body %}
 	{% include('/partials/navigationAdmin.html.twig') %}
 
-		{% for message in app.flashes('success') %}
-			<div class="alert alert-success">{{ message }}</div>
-		{% endfor %}
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">{{ message }}</div>
+	{% endfor %}
 
-		<!-- Conteneur pour le bouton de maintenance -->
-		<div class="text-center my-4">
-			<h2 class="mb-3">Gestion de la Maintenance</h2>
-			<form id="toggle-maintenance" method="post">
-				<button type="submit" class="btn btn-danger btn-lg maintenance-button">
-					Activer/Désactiver la Maintenance
-				</button>
-			</form>
-		</div>
+	<!-- Conteneur pour le bouton de maintenance -->
+	<div class="text-center my-4">
+		<h2 class="mb-3">Gestion de la Maintenance</h2>
+		<form id="toggle-maintenance" method="post">
+			<button type="submit" class="btn btn-danger btn-lg maintenance-button">
+				Activer/Désactiver la Maintenance
+			</button>
+		</form>
+	</div>
 
-		<div class="user-list-container">
-			<h1 class="user-list-title">LISTE DES UTILISATEURS</h1>
+	<div class="user-list-container">
+		<h1 class="user-list-title">LISTE DES UTILISATEURS</h1>
 
-			{% if users is empty %}
-				<p class="no-users-message">Aucun utilisateur trouvé.</p>
-			{% else %}
-				<table class="user-table">
-					<thead>
+		{% if users is empty %}
+			<p class="no-users-message">Aucun utilisateur trouvé.</p>
+		{% else %}
+			<table class="user-table">
+				<thead>
+					<tr>
+						<th>CLIENT</th>
+						<th>NOM</th>
+						<th>PRÉNOM</th>
+						<th>EMAIL</th>
+						<th>ACCÈS</th>
+						<th>ACTIONS</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for user in users %}
 						<tr>
-							<th>CLIENT</th>
-							<th>NOM</th>
-							<th>PRÉNOM</th>
-							<th>EMAIL</th>
-							<th>ACCÈS</th>
-							<th>ACTIONS</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for user in users %}
-							<tr>
-								<td style="background-color: {{ user.color }}; color: #000000;">
-									<b>{{ user.idclient ? user.idclient.raisonSociale : 'Aucun client associé' }}</b>
-								</td>
-								<td>
-									<b>{{ user.nom }}</b>
-									<span class="last-login-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ user.lastLogin ? user.lastLogin|date('d/m/Y H:i') : 'Jamais' }}">
-										<i class="fas fa-clock"></i>
-									</span>
-								</td>
-								<td>{{ user.prenom }}</td>
-								<td>{{ user.email }}</td>
+							<td style="background-color: {{ user.color }}; color: #000000;">
+								<b>{{ user.idclient ? user.idclient.raisonSociale : 'Aucun client associé' }}</b>
+							</td>
+							<td>
+								<b>{{ user.nom }}</b>
+								<span class="last-login-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ user.lastLogin ? user.lastLogin|date('d/m/Y H:i') : 'Jamais' }}">
+									<i class="fas fa-clock"></i>
+								</span>
+							</td>
+							<td>{{ user.prenom }}</td>
+							<td>{{ user.email }}</td>
 
-								<td>
-									<!-- Formulaire pour le contrôle d'accès -->
-									<form id="access-form-{{ user.id }}" action="{{ path('app_update_access', { id: user.id }) }}" method="POST" class="form-inline access-form" onsubmit="saveScrollPosition()">
-										<input type="hidden" name="webtaskOuvertureContact" value="{{ user.webtaskOuvertureContact == 0 ? 1 : 0 }}">
-										<button id="access-button-{{ user.id }}" type="submit" class="btn {{ user.webtaskOuvertureContact == 0 ? 'btn-danger' : 'btn-success' }}">
-											{{ user.webtaskOuvertureContact == 0 ? 'Accès Refusé' : 'Accès Autorisé' }}
-										</button>
-									</form>
-								</td>
+							<td>
+								<!-- Formulaire pour le contrôle d'accès -->
+								<form id="access-form-{{ user.id }}" action="{{ path('app_update_access', { id: user.id }) }}" method="POST" class="form-inline access-form" onsubmit="saveScrollPosition()">
+									<input type="hidden" name="webtaskOuvertureContact" value="{{ user.webtaskOuvertureContact == 0 ? 1 : 0 }}">
+									<button id="access-button-{{ user.id }}" type="submit" class="btn {{ user.webtaskOuvertureContact == 0 ? 'btn-danger' : 'btn-success' }}">
+										{{ user.webtaskOuvertureContact == 0 ? 'Accès Refusé' : 'Accès Autorisé' }}
+									</button>
+								</form>
+							</td>
 
-								<td>
-									<div class="d-flex">
-										<div class="role-selection mb-2">
-											<form action="{{ path('app_update_user_role', { id: user.id, role: 'lecteur' }) }}" method="post">
-												<button type="submit" class="btn {% if user.roleWX == 'lecteur' %}btn-success{% else %}btn-info{% endif %} mb-1">
-													<i class="fas fa-eye"></i> Lecteur
-													{% if user.roleWX == 'lecteur' %}<span class="badge bg-success">(Actif)</span>{% endif %}
-												</button>
-											</form>
-											<form action="{{ path('app_update_user_role', { id: user.id, role: 'createur' }) }}" method="post">
-												<button type="submit" class="btn {% if user.roleWX == 'createur' %}btn-success{% else %}btn-primary{% endif %}">
-													<i class="fas fa-pencil-alt"></i> Créateur
-													{% if user.roleWX == 'createur' %}<span class="badge bg-success">(Actif)</span>{% endif %}
-												</button>
-											</form>
-										</div>
-
-										<div class="reset-password-form">
-											<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#resetModal{{ user.id }}">
-												<i class="fas fa-sync"></i> <i class="fas fa-key"></i> Réinitialiser le mot de passe
-											</button>
-										</div>
-
-										{% if user.canBeDeleted %}
-											<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}">
-												<i class="fas fa-trash-alt"></i>
-											</button>
-										{% else %}
-											<button type="button" class="btn btn-danger" style="cursor: not-allowed; color: white;" disabled>
-												<i class="fas fa-trash-alt"></i>
-											</button>
-										{% endif %}
-									</div>
-								</td>
-								
-
-								<!-- Modal pour confirmation de suppression -->
-								<div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ user.id }}" aria-hidden="true">
-									<div class="modal-dialog">
-										<div class="modal-content">
-											<div class="modal-header">
-												<h5 class="modal-title" id="deleteModalLabel{{ user.id }}">Confirmation de suppression</h5>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-											</div>
-											<div class="modal-body">
-												Êtes-vous sûr de vouloir supprimer l'utilisateur <b>{{ user.nom }} {{ user.prenom }}</b> ?
-												{% if app.session.flashBag.has('warning') %}
-													<div class="alert alert-warning mt-3">
-														<strong>Attention :</strong>
-														{{ app.session.flashBag.get('warning')[0] }}
-													</div>
+							<td>
+								<div class="d-flex">
+									<div class="role-selection mb-2">
+										<form action="{{ path('app_update_user_role', { id: user.id, role: 'lecteur' }) }}" method="post">
+											<button type="submit" class="btn {% if user.roleWX == 'lecteur' %}btn-success{% else %}btn-info{% endif %} mb-1">
+												<i class="fas fa-eye"></i>
+												Lecteur
+												{% if user.roleWX == 'lecteur' %}
+													<span class="badge bg-success">(Actif)</span>
 												{% endif %}
-											</div>
-											<div class="modal-footer">
-												<form action="{{ path('app_delete_user', { id: user.id }) }}" method="POST">
-													<button type="submit" class="btn btn-danger">Supprimer</button>
+											</button>
+										</form>
+										<form action="{{ path('app_update_user_role', { id: user.id, role: 'createur' }) }}" method="post">
+											<button type="submit" class="btn {% if user.roleWX == 'createur' %}btn-success{% else %}btn-primary{% endif %}">
+												<i class="fas fa-pencil-alt"></i>
+												Créateur
+												{% if user.roleWX == 'createur' %}
+													<span class="badge bg-success">(Actif)</span>
+												{% endif %}
+											</button>
+										</form>
+									</div>
+
+									{% if user.idclient and user.idclient.id == 'e4e080b3758761bd01758f5fcfed03d9' %}
+										{% if user.id != app.user.id %}
+											<div>
+												<form id="role-toggle-form-{{ user.id }}" action="{{ path('app_toggle_user_role', { id: user.id }) }}" method="POST" class="role-toggle-form">
+													<button type="submit" class="btn {% if 'ROLE_ADMIN' in user.roles %}btn-warning{% else %}btn-primary{% endif %}">
+														{% if 'ROLE_ADMIN' in user.roles %}
+															<i class="fas fa-user-shield"></i>
+															Admin
+														{% else %}
+															<i class="fas fa-user"></i>
+															Utilisateur
+														{% endif %}
+													</button>
 												</form>
-												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
 											</div>
+										{% endif %}
+									{% endif %}
+
+									<div class="reset-password-form">
+										<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#resetModal{{ user.id }}">
+											<i class="fas fa-sync"></i>
+											<i class="fas fa-key"></i>
+											Réinitialiser le mot de passe
+										</button>
+									</div>
+
+									{% if user.canBeDeleted %}
+										<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}">
+											<i class="fas fa-trash-alt"></i>
+										</button>
+									{% else %}
+										<button type="button" class="btn btn-danger" style="cursor: not-allowed; color: white;" disabled>
+											<i class="fas fa-trash-alt"></i>
+										</button>
+									{% endif %}
+								</div>
+							</td>
+
+
+							<!-- Modal pour confirmation de suppression -->
+							<div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ user.id }}" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="deleteModalLabel{{ user.id }}">Confirmation de suppression</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+											Êtes-vous sûr de vouloir supprimer l'utilisateur
+											<b>{{ user.nom }}
+												{{ user.prenom }}</b>
+											?
+											{% if app.session.flashBag.has('warning') %}
+												<div class="alert alert-warning mt-3">
+													<strong>Attention :</strong>
+													{{ app.session.flashBag.get('warning')[0] }}
+												</div>
+											{% endif %}
+										</div>
+										<div class="modal-footer">
+											<form action="{{ path('app_delete_user', { id: user.id }) }}" method="POST">
+												<button type="submit" class="btn btn-danger">Supprimer</button>
+											</form>
+											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
 										</div>
 									</div>
 								</div>
+							</div>
 
-								<!-- Modal pour réinitialiser le mot de passe -->
-								<div class="modal fade" id="resetModal{{ user.id }}" tabindex="-1" aria-labelledby="resetModalLabel{{ user.id }}" aria-hidden="true">
-									<div class="modal-dialog">
-										<div class="modal-content">
-											<div class="modal-header">
-												<h5 class="modal-title" id="resetModalLabel{{ user.id }}">Réinitialisation du mot de passe</h5>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-											</div>
-											<div class="modal-body">
-												<form action="{{ path('app_reset_password', {'id': user.id}) }}" method="post" class="reset-password-form">
-													<input type="password" name="new_password" class="new-password-input" placeholder="Nouveau mot de passe" required>
-													<button type="submit" class="btn btn-primary">Réinitialiser</button>
-												</form>
-											</div>
+							<!-- Modal pour réinitialiser le mot de passe -->
+							<div class="modal fade" id="resetModal{{ user.id }}" tabindex="-1" aria-labelledby="resetModalLabel{{ user.id }}" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="resetModalLabel{{ user.id }}">Réinitialisation du mot de passe</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+											<form action="{{ path('app_reset_password', {'id': user.id}) }}" method="post" class="reset-password-form">
+												<input type="password" name="new_password" class="new-password-input" placeholder="Nouveau mot de passe" required>
+												<button type="submit" class="btn btn-primary">Réinitialiser</button>
+											</form>
 										</div>
 									</div>
 								</div>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			{% endif %}
-		</div>
+							</div>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% endif %}
+	</div>
 
-		<!-- JS de Bootstrap et dépendances -->
-		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-		<script src="{{ asset('./assets/js/gestionUserAdmin.js') }}"></script>
+	<!-- JS de Bootstrap et dépendances -->
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+	<script src="{{ asset('./assets/js/gestionUserAdmin.js') }}"></script>
 
-		<!-- GESTION DE LA MAINTENANCE -->
-		<script type="text/javascript">
-			document.getElementById('toggle-maintenance').onsubmit = function(event) {
-				event.preventDefault();
+	<!-- GESTION DE LA MAINTENANCE -->
+	<script type="text/javascript">
+		document.getElementById('toggle-maintenance').onsubmit = function (event) {
+event.preventDefault();
 
-				fetch('{{ path('toggle_maintenance') }}', {
-					method: 'POST'
-				})
-				.then(response => response.json())
-				.then(data => {
-					if (data.maintenance) {
-						alert('Maintenance activée');
-					} else {
-						alert('Maintenance désactivée');
-					}
-				});
-			};
+fetch('{{ path('toggle_maintenance') }}', {method: 'POST'}).then(response => response.json()).then(data => {
+if (data.maintenance) {
+alert('Maintenance activée');
+} else {
+alert('Maintenance désactivée');
+}
+});
+};
 
-			$(function () {
-				$('[data-bs-toggle="tooltip"]').tooltip();
-			});
-		</script>
+$(function () {
+$('[data-bs-toggle="tooltip"]').tooltip();
+});
+	</script>
 {% endblock %}

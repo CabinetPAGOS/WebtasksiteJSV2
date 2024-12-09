@@ -155,48 +155,35 @@
 				<div class="container-task" id="taskContainer">
 					{% for webtask in webtasks %}
 						{% if webtask.etatdelawebtask == 'ON' and webtask.piloteid is not null and webtask.piloteid.id == app.user.id %}
-							<div class="custom-task hidden" data-code="{{ webtask.webtask }}" data-titre="{{ webtask.titre }}">
-								<h2>
-									<b>{{ webtask.titre }}</b>
-								</h2>
-								<ul>
-									<li>
-										<b><u>WebTask :</u></b> {{ webtask.webtask }}
-									</li>
-									<li>
-										<b><u>Description :</u></b> {{ webtask.description|nl2br }}
-									</li>
-									<li>
-										<b><u>Version :</u></b> {{ webtask.versionLibelle }}
-									</li>
-									<li>
-										<b><u>Date de fin demandée :</u></b> {{ webtask.datefinDemandee }}
-									</li>
-									<li>
-										<b><u>Pilote :</u></b> 
-										{% if webtask.piloteid %}
-											{{ webtask.piloteid.prenom }} {{ webtask.piloteid.nom }}
-										{% else %}
-											Pilote non assigné
-										{% endif %}
-									</li>
-								</ul>
-								<div class="btn-group" role="group">
-									<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertachesadmin', { 'id': webtask.code }) }}'">CONSULTER</button>
-									{# <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitachesadmin', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button> #}
-									{% if app.user.idclient and app.user.idclient.getId() not in allowed_ids %}
-										<button type="button" class="btn btn-secondary repondre consulter rounded" onclick="window.location.href='{{ path('app_reponsetachesadmin', { 'id': webtask.id }) }}'">RÉPONDRE</button>
-									{% endif %}
-								</div>
-							</div>
-						{% endif %}
-					{% endfor %}
-				</div>
-			{% else %}
-				<p>Aucune tâche disponible.</p>
-			{% endif %}
-		</div>
-	{% endif %}
+							<div class="custom-task" 
+                            data-code="{{ webtask.webtask }}" 
+                            data-titre="{{ webtask.titre }}" 
+                            data-avancement="{{ webtask.avancementdelatache }}" 
+                            data-pilote-id="{{ webtask.piloteid.id }}">
+                            <h2><b>{{ webtask.titre }}</b></h2>
+                            <ul>
+                                <li><b><u>WebTask :</u></b> {{ webtask.webtask }}</li>
+                                <li><b><u>Description :</u></b> {{ webtask.description|nl2br }}</li>    
+                                <li><b><u>Date de fin demandée :</u></b> {{ webtask.datefinDemandee }}</li>
+                                <li><b><u>Avancement de la tâche :</u></b> <span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span></li>
+                                <li><b><u>Créateur :</u></b>  {{ (webtask.iddemandeur.prenom[:1] ~ '. ' ~ webtask.iddemandeur.nom)|upper }}</li>
+                                <li><b><u>Responsable :</u></b> {{ (webtask.responsable.prenom[:1] ~ '. ' ~ webtask.responsable.nom)|upper }}</li>
+                                <li><b><u>Pilote :</u></b> {{ (webtask.piloteid.prenom[:1] ~ '. ' ~ webtask.piloteid.nom)|upper }}</li>
+                                <li><b><u>Version :</u></b> {{ webtask.versionLibelle }}</li>
+                            </ul>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertaches', { 'id': webtask.code }) }}'">CONSULTER</button>
+                                {# <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitaches', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button> #}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Aucune tâche disponible.</p>
+        {% endif %}
+    </div>
+{% endif %}
 
 	<hr>
 

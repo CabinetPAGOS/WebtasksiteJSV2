@@ -28,7 +28,7 @@ class GestionUserController extends AbstractController
 
     public function __construct(
         WebtaskRepository $webTaskRepository,
-        EntityManagerInterface $entityManager, 
+        EntityManagerInterface $entityManager,
         NotificationRepository $notificationRepository,
         ClientRepository $clientRepository
 
@@ -311,6 +311,43 @@ class GestionUserController extends AbstractController
         // Rediriger vers la gestion des utilisateurs
         return $this->redirectToRoute('app_gestionuser');
     }
+
+    #[Route('/user/role-admin-user/{id}', name: 'app_toggle_user_role', methods: ['POST'])]
+    public function updateRoleAdminUser(string $id, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+
+        // Trouver l'utilisateur
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+
+
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
+
+        // Vérifier si l'utilisateur a le rôle 'ROLE_ADMIN'
+        $roles = $user->getRoles(); // Récupère les rôles existants
+
+        if (in_array('ROLE_ADMIN', $roles)) {
+            // L'utilisateur a déjà le rôle ADMIN, on le retire
+            $roles = array_diff($roles, ['ROLE_ADMIN']);
+        } else {
+            // L'utilisateur n'a pas le rôle ADMIN, on l'ajoute
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        // Mettre à jour les rôles de l'utilisateur
+        $user->setRoles($roles);
+
+        // Enregistrer les modifications dans la base de données
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        // Rediriger vers la gestion des utilisateurs
+        return $this->redirectToRoute('app_gestionuser');
+    }
+
 
     // Méthode pour générer une couleur hexadécimale à partir d'une chaîne
     private function generateColorFromString(string $string): string

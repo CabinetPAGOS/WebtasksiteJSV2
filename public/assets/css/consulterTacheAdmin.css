@@ -291,7 +291,6 @@
     margin: 15px 0;
 }
 
-.comment-client,
 .comment-internal {
     background-color: #fff;
     padding: 10px;
@@ -327,10 +326,20 @@
     font-weight: normal;
 }
 
-.comment-green {
-    color: #00b050;
+.comment-blue {
+    color: #1AC2DD;
+    padding: 10px;
+    border-left: 4px solid #4caf50;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
 }
 
-.comment-black {
-    color: #000000;
+.comment-red {
+    color: #FF0000;
+    padding: 10px;
+    border-left: 4px solid #4caf50;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
 }

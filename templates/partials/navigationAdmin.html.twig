@@ -1,5 +1,5 @@
 <!-- CSS -->
-<link href="{{ asset('./assets/css/navigationAdmin.css') }}" rel="stylesheet" />
+<link href="{{ asset('./assets/css/navigationAdmin.css') }}" rel="stylesheet"/>
 
 <nav class="navbar navbar-expand-lg navbar-custom">
 	<div class="container-fluid">
@@ -17,24 +17,26 @@
 		<div class="collapse navbar-collapse" id="navbarColor01">
 			<ul class="navbar-nav me-auto">
 				<li class="nav-item">
-					<a class="nav-link nav-link-custom {% if app.request.attributes.get('_route') == 'app_homeadmin' %}active{% endif %}" 
-					href="{{ path('app_homeadmin') }}">
+					<a class="nav-link nav-link-custom {% if app.request.attributes.get('_route') == 'app_homeadmin' %}active{% endif %}" href="{{ path('app_homeadmin') }}">
 						<b>Accueil</b>
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link nav-link-custom {% if app.request.attributes.get('_route') == 'app_notificationadmin' %}active{% endif %}" 
-					href="{{ path('app_notificationadmin', { 'id': client.id }) }}">
+					<a class="nav-link nav-link-custom {% if app.request.attributes.get('_route') == 'app_notificationadmin' %}active{% endif %}" href="{{ path('app_notificationadmin', { 'id': client.id }) }}">
 						<b>Notifications</b>
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link nav-link-custom {% if app.request.attributes.get('_route') == 'app_tachesadmin' %}active{% endif %}" 
-					href="{{ path('app_tachesadmin') }}">
+					<a class="nav-link nav-link-custom {% if app.request.attributes.get('_route') == 'app_tachesadmin' %}active{% endif %}" href="{{ path('app_tachesadmin') }}">
 						<b>Tâches</b>
 					</a>
 				</li>
-				
+				<li class="nav-item">
+					<a class="nav-link nav-link-custom {% if app.request.attributes.get('_route') == 'app_clientsdepagosadmin' %}active{% endif %}" href="{{ path('app_clientsdepagosadmin') }}">
+						<b>Clients</b>
+					</a>
+				</li>
+
 				<!-- Section ADMINISTRATION -->
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle nav-link-custom" href="#" id="administrationDropdown" role="button">
@@ -45,8 +47,7 @@
 						<div class="admin-global">
 							<span class="dropdown-header">ADMINISTRATION GLOBALE</span>
 							<li>
-								<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_importexport' %}active{% endif %}"
-									href="{{ path('app_importexport') }}">
+								<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_importexport' %}active{% endif %}" href="{{ path('app_importexport') }}">
 									Imports / Exports
 								</a>
 							</li>
@@ -57,14 +58,7 @@
 							<div class="client-section">
 								<span class="dropdown-header">ADMINISTRATION CLIENT</span>
 								<li>
-									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_clientsdepagosadmin' %}active{% endif %}"
-										href="{{ path('app_clientsdepagosadmin') }}">
-										Clients de Pagos
-									</a>
-								</li>
-								<li>
-									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_createclientadmin' %}active{% endif %}"
-										href="{{ path('app_createclientadmin') }}">
+									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_createclientadmin' %}active{% endif %}" href="{{ path('app_createclientadmin') }}">
 										Créer un Client
 									</a>
 								</li>
@@ -73,14 +67,12 @@
 							<div class="user-section">
 								<span class="dropdown-header">ADMINISTRATION USER</span>
 								<li>
-									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_gestionuser' %}active{% endif %}"
-										href="{{ path('app_gestionuser') }}">
+									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_gestionuser' %}active{% endif %}" href="{{ path('app_gestionuser') }}">
 										Gestion utilisateur
 									</a>
 								</li>
 								<li>
-									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_register' %}active{% endif %}"
-										href="{{ path('app_register') }}">
+									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_register' %}active{% endif %}" href="{{ path('app_register') }}">
 										Créer un utilisateur
 									</a>
 								</li>
@@ -88,12 +80,13 @@
 						</div>
 					</ul>
 				</li>
-            </ul>
+			</ul>
 
 			<!-- Liens côté droit -->
 			<ul class="navbar-nav ms-auto">
 				<li class="nav-item nav-link nav-link-custom user-name">
-					<b>{{ app.user.nom }} {{ app.user.prenom }}</b>
+					<b>{{ app.user.nom }}
+						{{ app.user.prenom }}</b>
 				</li>
 
 				<!-- Icône de notification -->
@@ -111,7 +104,7 @@
 									<li>Aucune notification</li>
 								{% else %}
 									{% set notificationsByClient = {} %}
-									
+
 									{# Regrouper les notifications par client #}
 									{% for notification in visibleNotifications %}
 										{% set clientName = notification.getClient.getRaisonSociale() %}
@@ -135,7 +128,8 @@
 																<span class="creation-date">{{ notification.getDateCreation() | date('d/m/y H:i:s') }}</span>
 															</div>
 															<div class="notification-body">
-																{{ notification.getTitreWebtask() }} ({{ notification.getLibelleWebtask() }})<br>
+																{{ notification.getTitreWebtask() }}
+																({{ notification.getLibelleWebtask() }})<br>
 																{{ notification.getMessage() }}
 															</div>
 															<div class="notification-buttons">
@@ -146,7 +140,9 @@
 													{% endfor %}
 												</ul>
 											</li>
-											<hr style="border-top: 2px solid #007bff; margin: 10px 0;"> {# Séparation entre clients #}
+											<hr
+											style="border-top: 2px solid #007bff; margin: 10px 0;">
+										{# Séparation entre clients #}
 										{% endif %}
 									{% endfor %}
 								{% endif %}
@@ -157,7 +153,7 @@
 
 				<!-- Logo client et déconnexion -->
 				<li class="nav-item d-flex align-items-center">
-					<img src="data:image/png;base64,{{ logo }}" alt="Logo du client" class="client-logo me-2" />
+					<img src="data:image/png;base64,{{ logo }}" alt="Logo du client" class="client-logo me-2"/>
 					<a class="nav-link logout-icon" href="{{ path('app_logout') }}" title="Se déconnecter">
 						<i class="fas fa-sign-out-alt"></i>
 					</a>
@@ -166,6 +162,7 @@
 		</div>
 	</div>
 </nav>
+
 
 <!-- JS -->
 <script src="{{ asset('./assets/js/navigationAdmin.js') }}"></script>

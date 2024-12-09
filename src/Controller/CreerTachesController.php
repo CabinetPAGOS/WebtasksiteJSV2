@@ -30,9 +30,9 @@ class CreerTachesController extends AbstractController
 
     public function __construct(
         WebtaskRepository $webTaskRepository,
-        TextTransformer $textTransformer, 
-        VersionService $versionService, 
-        ClientRepository $clientRepository, 
+        TextTransformer $textTransformer,
+        VersionService $versionService,
+        ClientRepository $clientRepository,
         NotificationRepository $notificationRepository
     ) {
         $this->webTaskRepository = $webTaskRepository;
@@ -86,15 +86,15 @@ class CreerTachesController extends AbstractController
             for ($i = 1; $i <= 3; $i++) {
                 $fileLink = $request->request->get("fileLink{$i}", "");   // lien de fichier
                 $fileTitle = $request->request->get("fileTitle{$i}", ""); // titre de fichier
-            
+
                 // Enregistrer uniquement le titre si le lien est vide, sinon les deux
                 $liendrive = !empty($fileTitle) ? "{$fileLink}?" . urlencode($fileTitle) : "";
-                
+
                 // Si seulement le titre est fourni sans lien
                 if (empty($fileLink) && !empty($fileTitle)) {
                     $liendrive = urlencode($fileTitle);
                 }
-            
+
                 // Appel dynamique du setter
                 $setter = "setLienDrive{$i}";
                 $newTache->$setter($liendrive);
@@ -130,7 +130,7 @@ class CreerTachesController extends AbstractController
                 $newCodeNumber = 1;
             }
             $newTache->setCode(sprintf('SWT-%06d', $newCodeNumber));
-        
+
             // Générer le libellé et le code automatique pour les webtasks en fonction du champ libellé
             $lastTaskWithLabel = $entityManager->getRepository(Webtask::class)->createQueryBuilder('w')
                 ->where('w.libelle LIKE :prefix')
@@ -175,16 +175,35 @@ class CreerTachesController extends AbstractController
                 $newTache->setPiloteid($pilote); // Assignation du pilote
             }
 
-            // Vérifier les documents attachés
-            $documentsAttaches = [
-                $request->request->get('lien_drive_1', ""),
-                $request->request->get('lien_drive_2', ""),
-                $request->request->get('lien_drive_3', ""),
+            // Récupérer les liens de fichiers et titres depuis la requête
+            $fileLinks = [
+                $request->request->get('fileLink1', ''),
+                $request->request->get('fileLink2', ''),
+                $request->request->get('fileLink3', '')
             ];
-            
-            // Vérifiez si au moins un lien contient une valeur
-            $areDocumentsAttaches = !empty(array_filter($documentsAttaches, fn($link) => $link !== ""));
-            $newTache->setDocumentsAttaches($areDocumentsAttaches ? '1' : '0'); // Stocker comme chaîne
+
+            $fileTitles = [
+                $request->request->get('fileTitle1', ''),
+                $request->request->get('fileTitle2', ''),
+                $request->request->get('fileTitle3', '')
+            ];
+
+            // Initialiser la variable pour savoir s'il y a des documents attachés
+            $hasDocuments = false;
+
+            // Vérifier si au moins un des liens est renseigné
+            foreach ($fileLinks as $index => $fileLink) {
+                $fileTitle = $fileTitles[$index];
+
+                // Si un lien ou un titre est fourni, considérer que le document est attaché
+                if (!empty($fileLink) || !empty($fileTitle)) {
+                    $hasDocuments = true;
+                    break; // Si un document est trouvé, on arrête la boucle
+                }
+            }
+
+            // Mettre à jour la tâche avec le statut de documents attachés
+            $newTache->setDocumentsAttaches($hasDocuments ? '1' : '0');  // Stockage en tant que chaîne
 
             // Récupérer la date d'échéance ou définir la date par défaut
             $dueDate = $request->request->get('due_date');
@@ -236,37 +255,37 @@ class CreerTachesController extends AbstractController
 
             // Récupérer tous les utilisateurs du client CABINET PAGOS
             $cabinetPagosClient = $entityManager->getRepository(Client::class)
-            ->findOneBy(['raison_sociale' => 'CABINET PAGOS']);
+                ->findOneBy(['raison_sociale' => 'CABINET PAGOS']);
 
             $usersCabinetPagos = $cabinetPagosClient
-            ? $entityManager->getRepository(User::class)
+                ? $entityManager->getRepository(User::class)
                 ->findBy(['idclient' => $cabinetPagosClient])
-            : [];
+                : [];
 
             // Récupérer tous les utilisateurs du client actuel
             $usersCurrentClient = $entityManager->getRepository(User::class)
-            ->findBy(['idclient' => $client]);
+                ->findBy(['idclient' => $client]);
 
             // Fusionner les listes d'utilisateurs sans doublons
             $allUsers = array_unique(array_merge($usersCabinetPagos, $usersCurrentClient), SORT_REGULAR);
 
             // Créer une notification pour chaque utilisateur, sauf l'utilisateur connecté
             foreach ($allUsers as $userNotification) {
-            if ($userNotification === $user) {
-                continue; // Ignorer l'utilisateur connecté
-            }
+                if ($userNotification === $user) {
+                    continue; // Ignorer l'utilisateur connecté
+                }
 
-            $notification = new Notification();
-            $notification->setMessage('Création de la WebTask : ' . $newTache->getLibelle());
-            $notification->setLibelleWebtask($newTache->getLibelle());
-            $notification->setDateCreation(new \DateTime());
-            $notification->setVisible(true);
-            $notification->setClient($newTache->getIdclient());
-            $notification->setTitreWebtask($newTache->getTitre());
-            $notification->setCodeWebtask($newTache->getCode());
-            $notification->setUser($userNotification);
+                $notification = new Notification();
+                $notification->setMessage('Création de la WebTask : ' . $newTache->getLibelle());
+                $notification->setLibelleWebtask($newTache->getLibelle());
+                $notification->setDateCreation(new \DateTime());
+                $notification->setVisible(true);
+                $notification->setClient($newTache->getIdclient());
+                $notification->setTitreWebtask($newTache->getTitre());
+                $notification->setCodeWebtask($newTache->getCode());
+                $notification->setUser($userNotification);
 
-            $entityManager->persist($notification);
+                $entityManager->persist($notification);
             }
 
             // Sauvegarder les notifications en base de données
@@ -356,10 +375,19 @@ class CreerTachesController extends AbstractController
     public function createTask(Request $request): Response
     {
         // Créez une nouvelle instance de l'entité Webtask
+        $newTache = new Webtask();
         $webtask = new Webtask();
+
+
 
         // Récupérez la valeur du champ caché
         $documentsAttachesValue = $request->request->get('documents_attaches');
+
+        // Vérifier si au moins un des liens drive est renseigné
+        $hasDocuments = !empty($liendrive1) || !empty($liendrive2) || !empty($liendrive3);
+
+        // Mettre à jour l'attribut 'documentsAttaches' de la tâche
+        $newTache->setDocumentsAttaches($hasDocuments ? '1' : '0'); // Stockage en tant que chaîne
 
         // Mettez à jour l'entité
         $webtask->setDocumentsAttaches($documentsAttachesValue === "1");

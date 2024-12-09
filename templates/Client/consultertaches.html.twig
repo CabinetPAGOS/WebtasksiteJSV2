@@ -143,7 +143,7 @@
 							<!-- Commentaire client -->
 							{% if task.commentaire_webtask_client is not empty %}
 								<hr class="separator">
-								<div class="comment-client {% if task.isPagosUser %} comment-green {% else %} comment-black {% endif %}">
+								<div class="comment-client {% if task.isPagosUser %} comment-blue {% else %} comment-red {% endif %}">
 									<b><u>Commentaire client :</u></b>
 									<p>{{ task.commentaire_webtask_client|nl2br }}</p>
 								</div>
@@ -156,7 +156,7 @@
 									<b>
 										<u>Commentaire Interne PAGOS :</u>
 									</b>
-									<p>{{ task.commentaire_interne_pagos|nl2br }}</p>
+									<p style="color: #00B050;">{{ task.commentaire_interne_pagos|nl2br }}</p>
 								</div>
 							{% endif %}
 						</div>

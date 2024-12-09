@@ -1,0 +1,336 @@
+/* Styles spécifiques pour le formulaire */
+.form {
+    background: white;
+    padding: 1rem;
+    border-radius: 5px;
+    max-width: 82%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1 1 calc(33.33% - 1rem);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.form-group div {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+/* Button Styles */
+.form .btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid black;
+    margin-right: 10px;
+    padding: 10px 20px; /* Espacement interne du bouton */
+    font-size: 16px; /* Taille de la police */
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Transition pour les effets de survol */
+}
+
+.form .btn-secondary:hover {
+    background-color: #6c757d; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol */
+    transform: translateY(-3px); /* Effet de levée au survol */
+    border-color: #6c757d; /* Couleur de bordure au survol */
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center; /* Centre les boutons */
+    gap: 15px; /* Espace entre les boutons */
+    margin-top: 20px;
+}
+
+/* Styles pour les titres avec fond coloré séparé */
+.title-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.title01 {
+    background-color: #d7df22;
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 0 0.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title02 {
+    background-color: #d7df22;
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 0 0.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title03 {
+    background-color: #d7df22;
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 0 0.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title:nth-child(1)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 1rem;
+    height: 100%;
+    background: white;
+    z-index: -1;
+}
+
+.title:nth-child(2)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 1rem;
+    height: 100%;
+    background: white;
+    z-index: -1;
+}
+
+.title:nth-child(3)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 1rem;
+    height: 100%;
+    background: white;
+    z-index: -1;
+}
+
+.description-text {
+    color: #1AC2DD; /* Couleur bleu ciel */
+}
+
+/* Style Tag */
+.tag-minor {
+    background-color: #00B050;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-serious {
+    background-color: #FFC000;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-blocking {
+    background-color: #FF0000;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-unknown {
+    background-color: grey;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* Style Avancement */
+.text-npc { color: #ff0000; font-weight: bold; }
+.text-pc { color: #ffc000; font-weight: bold; }
+.text-t { color: #00b050; font-weight: bold; }
+.text-a { color: #FF0000; font-weight: bold; background-color: #00C995; }
+.text-r { color: #ffffff; font-weight: bold; background-color: #000000; }
+.text-v { color: #04C49E; font-weight: bold; background-color: #000000; }
+.text-sc { color: #ffffff; font-weight: bold; background-color: #C92093; }
+.text-gc { color: #000000; font-weight: bold; background-color: #00B050; }
+
+/* Style général pour la section des commentaires */
+.comments-section div {
+    width: 100%;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.comment-card {
+    margin-bottom: 20px; /* Espace entre chaque bloc de commentaire */
+    padding: 10px; /* Espacement interne dans chaque bloc */
+    border: 1px solid #ccc; /* Bordure légère autour des blocs (facultatif) */
+    border-radius: 8px; /* Coins arrondis pour un aspect plus doux */
+    background-color: #f9f9f9; /* Couleur de fond pour chaque bloc */
+}
+
+.task-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold; /* Rend tout le texte en gras */
+    gap: 5px; /* Espace entre les éléments */
+}
+
+.task-info b {
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.separator {
+    border: 0;
+    border-top: 2px solid #000;
+    margin: 15px 0;
+}
+
+.comment-client,
+.comment-internal {
+    background-color: #fff;
+    padding: 10px;
+    border-left: 4px solid #4caf50;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.no-comments,
+.no-client-comment,
+.no-internal-comment {
+    color: #999;
+    font-style: italic;
+    font-size: 14px;
+}
+
+.comment-client b,
+.comment-internal b {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.comment-card p {
+    margin: 0;
+}
+
+.no-comments,
+.no-client-comment,
+.no-internal-comment b {
+    font-weight: normal;
+}
+
+/* Conteneur principal pour les documents */
+#documents {
+    background-color: #f9f9f9; /* Fond gris clair pour un aspect doux */
+    border-radius: 12px; /* Coins arrondis pour un look moderne */
+    padding: 25px; /* Espacement interne accru pour un look aéré */
+    margin-top: 10px; /* Marges supérieures */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Ombre plus marquée pour profondeur */
+}
+
+/* Éléments de chaque document */
+.document-item {
+    display: flex; /* Utilisation de flexbox pour l'alignement */
+    align-items: center; /* Alignement vertical centré */
+    padding: 12px 15px; /* Espacement interne */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transition douce pour l'effet de survol */
+    border-radius: 8px; /* Coins arrondis */
+    border: 1px solid transparent; /* Bordure transparente par défaut */
+    margin-bottom: 10px; /* Marges entre les éléments */
+}
+
+/* Couleur de fond au survol */
+.document-item:hover {
+    background-color: #e7f3ff; /* Fond bleu clair au survol */
+    transform: translateY(-2px); /* Légère élévation au survol */
+    border: 1px solid #007bff; /* Bordure bleue au survol */
+}
+
+/* Styles pour les titres */
+.document-item span {
+    flex-grow: 1; /* Prendre l'espace disponible */
+    color: #333; /* Couleur de texte sombre */
+    margin-left: 15px; /* Espace entre l'icône et le titre */
+    font-weight: 400; /* Poids de la police normal pour supprimer le gras */
+}
+
+/* Styles pour l'icône */
+.document-item a {
+    color: #007bff; /* Couleur du lien (bleu) */
+    text-decoration: none; /* Supprime le soulignement */
+    display: flex; /* Aligner l'icône */
+    align-items: center; /* Centrer verticalement */
+}
+
+/* Effet de survol sur l'icône */
+.document-item a:hover {
+    color: #0056b3; /* Couleur plus foncée au survol */
+}
+
+/* Styles pour l'icône */
+.document-item i {
+    font-size: 28px; /* Taille de l'icône plus grande pour plus d'impact */
+    margin-right: 15px; /* Espace à droite de l'icône */
+    transition: transform 0.3s; /* Transition douce pour l'effet de survol */
+}
+
+/* Effet de zoom sur l'icône au survol */
+.document-item a:hover i {
+    transform: scale(1.2); /* Légère augmentation de la taille de l'icône */
+}
+
+.comment-green {
+    color: #00B050;
+}
+
+.comment-black {
+    color: #000000;
+}

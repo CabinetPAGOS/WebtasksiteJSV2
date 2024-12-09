@@ -1,483 +1,54 @@
-<!DOCTYPE html>
-<html lang="fr">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="icon" href="\img\logoPagosImg02.png" type="image/x-icon">
+{% extends 'base.html.twig' %}
 
-		<title>Forum</title>
+{% block title %}Forum - ADMIN{% endblock %}
 
-		<!-- Bootstrap CSS -->
-		<link
-		href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block head %}
+	<!-- CSS -->
+    <link href="{{ asset('./assets/css/forumAdmin.css') }}" rel="stylesheet" />
+{% endblock %}
 
-		<!-- FontAwesome (pour les icônes) -->
-		<link
-		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% block body %}
+	{% include('/partials/navigationAdmin.html.twig') %}
 
-		<!-- Custom CSS -->
-		<style>
-			body {
-				font-family: 'Helvetica', Arial, sans-serif;
-			}
+	<div class="container-forum mt-4">
+		<h2 class="mb-4">Forum du Client :
+			<strong>{{ client.raisonSociale }}</strong>
+		</h2>
 
-			/* Navbar */
-			.navbar-custom {
-				background-color: #818285;
-				border-style: none;
-			}
+		<!-- Ajout de l'ID du client dans un attribut data -->
+    	<div id="client-info" data-client-id="{{ client.id }}"></div>
 
-			.navbar-custom .nav-link {
-				color: #ffffff;
-				font-size: 19px;
-			}
-
-			.navbar-custom .nav-link:hover {
-				color: #000000;
-			}
-
-			.img-navbar {
-				width: 100%;
-				height: 80px;
-			}
-
-			.navbar-toggler-icon {
-				color: white;
-			}
-
-			.dropdown-menu {
-				background-color: #818285;
-			}
-
-			.dropdown-menu .dropdown-header {
-				color: #ffffff;
-				font-size: 16px;
-			}
-
-			.dropdown-menu .dropdown-item {
-				color: #ff0000;
-			}
-
-			.dropdown-menu .dropdown-item:hover {
-				background-color: #818285;
-				color: #ffffff;
-			}
-
-			/* Navbar Dropdown */
-			.navbar .nav-item .dropdown-menu {
-				min-width: 200px;
-			}
-
-			/* Badge Notification */
-			.navbar .badge {
-				position: absolute;
-				top: -5px;
-				right: -10px;
-				font-size: 0.75rem;
-			}
-
-			/* Notifications */
-			.notification-container {
-				position: relative;
-				margin-right: 15px;
-				display: flex;
-				align-items: center;
-			}
-
-			#notificationIcon {
-				font-size: 24px;
-				color: white;
-				position: relative;
-				cursor: pointer;
-			}
-
-			.notification-count {
-				position: absolute;
-				top: -5px;
-				right: -7px;
-				background-color: red;
-				color: white;
-				border-radius: 50%;
-				padding: 3px 7px;
-				font-size: 12px;
-				font-weight: bold;
-			}
-
-			.notifications {
-				border: 2px solid #000;
-				background-color: #fff;
-				position: absolute;
-				z-index: 1000;
-				width: 600px;
-				top: -210px;
-				right: 0;
-				margin-top: 250px;
-				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-				padding: 2px;
-				display: none;
-				opacity: 0;
-				transition: opacity 0.3s ease-in-out;
-			}
-
-			.notifications.show {
-				display: block;
-				opacity: 1;
-			}
-
-			.notifications ul {
-				list-style: none;
-				padding: 0;
-				margin: 0;
-			}
-
-			.notifications li {
-				padding: 10px;
-				border-bottom: 1px solid #ccc;
-				font-size: 12px;
-			}
-
-			.notifications li:last-child {
-				border-bottom: none;
-			}
-
-			.notification-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-
-			.creation-date {
-				font-size: 0.9em;
-				color: #666;
-			}
-
-			.notification-body {
-				margin-bottom: 10px;
-			}
-
-			.notification-buttons {
-				display: flex;
-				justify-content: flex-end;
-				gap: 10px;
-			}
-
-			.notification-buttons button {
-				padding: 5px 10px;
-				margin: 0 2px;
-				cursor: pointer;
-				border: none;
-				border-radius: 5px;
-				background-color: #007bff;
-				color: white;
-				transition: background-color 0.3s;
-			}
-
-			.notification-buttons button:hover {
-				background-color: #0056b3;
-			}
-
-			/* Container principal */
-			.container-forum {
-				max-width: 900px;
-				margin: 0 auto;
-				padding: 20px;
-				background-color: #f9f9f9;
-				border: 1px solid #ddd;
-				border-radius: 10px;
-				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-			}
-
-			/* Titre principal */
-			.container-forum h2 {
-				font-size: 1.8rem;
-				font-weight: bold;
-				color: #333;
-			}
-
-			/* Sous-titre pour l'ajout de chat */
-			.container-forum h4 {
-				font-size: 1.4rem;
-				color: #555;
-				margin-bottom: 15px;
-			}
-
-			/* Zone de contenu du forum */
-			#forum-contents {
-				margin-top: 20px;
-			}
-
-			/* Message "Aucun chat disponible" */
-			.no-content {
-				text-align: center;
-				color: #999;
-				font-style: italic;
-				font-size: 1rem;
-			}
-
-			/* Entrée du forum */
-			.forum-entry {
-				background-color: #ffffff;
-				padding: 15px;
-				border: 1px solid #ddd;
-				border-radius: 8px;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-			}
-
-			.forum-entry p {
-				margin-bottom: 10px;
-				font-size: 1rem;
-				color: #555;
-			}
-
-			.forum-entry pre {
-				background-color: #f5f5f5;
-				padding: 10px;
-				border-radius: 5px;
-				font-size: 0.9rem;
-				white-space: pre-wrap;
-				word-wrap: break-word;
-			}
-
-			/* Boutons Modifier et Supprimer */
-			.forum-entry .btn-outline-secondary {
-				margin-right: 10px;
-			}
-
-			.forum-entry .btn-outline-danger {
-				margin-left: 5px;
-			}
-
-			/* Formulaire d'ajout de résumé */
-			#add-summary {
-				margin-top: 30px;
-			}
-
-			#summary-text {
-				font-size: 1rem;
-				border: 2px solid #ddd;
-				border-radius: 8px;
-				padding: 15px;
-				background-color: #ffffff;
-				resize: none;
-				box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-			}
-
-			#submit-summary {
-				background-color: #007bff;
-				color: white;
-				font-size: 1rem;
-				font-weight: bold;
-				border: none;
-				border-radius: 5px;
-				padding: 10px 20px;
-				transition: background-color 0.3s ease;
-			}
-
-			#submit-summary:hover {
-				background-color: #0056b3;
-				cursor: pointer;
-			}
-
-			/* Ligne de séparation */
-			.forum-entry hr {
-				border: 0;
-				height: 1px;
-				background-color: #ddd;
-				margin: 15px 0;
-			}
-
-			/* Footer */
-			footer {
-				text-align: center;
-				padding: 20px 0;
-				background-color: #f4f4f4;
-				border-top: 1px solid #ccc;
-			}
-
-			footer p {
-				color: #333;
-			}
-		</style>
-	</head>
-	<body>	
-		<!-- Navbar -->
-		<nav class="navbar navbar-expand-lg navbar-custom">
-			<div
-				class="container-fluid">
-				<!-- Logo -->
-				<a class="navbar-brand" href="{{ path('app_logout') }}">
-					<img class="img-navbar" src="/img/logoPagosImg04.png" alt="Logo" height="40">
-				</a>
-
-				<!-- Bouton pour mobiles -->
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-
-				<!-- Liens du menu -->
-				<div class="collapse navbar-collapse" id="navbarColor01">
-					<ul class="navbar-nav me-auto">
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('app_homeadmin') }}">
-								<b>Accueil</b>
-							</a>
-						</li>
-						{% set allowed_ids = ['e4e080b3758761bd01758f5fcfed03d9'] %}
-						{% if app.user.idclient and app.user.idclient.getId() in allowed_ids %}
-							<li class="nav-item" >
-								<a class="nav-link" href="{{ path('app_notificationadmin', { 'id': client.id }) }}">
-									<b>Notifications</b>
-								</a>
-							</li>
-						{% endif %}
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('app_tachesadmin') }}">
-								<b>Tâches</b>
-							</a>
-						</li>
-
-						<!-- Lien pour Clients de Pagos en dehors du dropdown -->
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('app_clientsdepagosadmin') }}">
-								<b>Clients de Pagos</b>
-							</a>
-						</li>
-
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="gestionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								<b>Administration</b>
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="gestionDropdown">
-								<li>
-									<a class="dropdown-item" href="{{ path('app_gestionuser') }}">
-										<b>Gestion utilisateur</b>
-									</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="{{ path('app_importexport') }}">
-										<b>Imports / Exports</b>
-									</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="{{ path('app_register') }}">
-										<b>Créer un utilisateur</b>
-									</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="{{ path('app_createclientadmin') }}">
-										<b>Créer un Client</b>
-									</a>
-								</li>
-							</ul>
-						</li>
-					</ul>
-
-					<!-- Liens côté droit -->
-					<ul class="navbar-nav ms-auto">
-						<li class="nav-item">
-							<a class="nav-link" href="#" style="color: #ffffff; text-align: center;">
-								<b>{{ app.user.nom }}
-									{{ app.user.prenom }}</b>
-							</a>
-						</li>
-
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								<i class="fas fa-user-circle" style="font-size: 1.5em; color: white;"></i>
-							</a>
-							<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
-								<li><hr class="dropdown-divider"></li>
-								<li>
-									<a class="dropdown-item" href="{{ path('app_logout') }}">
-										<b>
-											<i class="fas fa-sign-out-alt"></i>
-											Se déconnecter
-										</b>
-									</a>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-
-		<div class="container-forum mt-4">
-			<h2 class="mb-4">Forum du Client : <strong>{{ client.raisonSociale }}</strong></h2>
-
-			<!-- Affichage des résumés existants -->
-			<div id="forum-contents">
-				{% if forums is empty %}
-					<p class="no-content">Aucun Chat disponible pour ce client.</p>
-				{% else %}
-					{% for forum in forums %}
-						<div class="forum-entry mb-4">
-							<p><strong>Date :</strong> {{ forum.date|date('d/m/Y H:i') }}</p>
-							<pre class="forum-content">{{ forum.content }}</pre>
-							<a href="{{ path('app_adminforum_edit', {id: forum.id}) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
-							<form action="{{ path('app_adminforum_delete', {id: forum.id}) }}" method="POST" style="display:inline;">
-								<button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce Chat ?');">Supprimer</button>
-							</form>
-							<hr>
-						</div>
-					{% endfor %}
-				{% endif %}
-			</div>
-
-			<!-- Formulaire d'ajout de résumé -->
-			<div id="add-summary" class="mt-5">
-				<h4>Ajouter un nouveau Chat :</h4>
-				<textarea id="summary-text" rows="6" placeholder="Entrez votre résumé ici..." class="form-control mb-3"></textarea>
-				<button id="submit-summary" class="btn btn-primary btn-lg">Envoyer le Chat</button>
-			</div>
+		<!-- Affichage des résumés existants -->
+		<div id="forum-contents">
+			{% if forums is empty %}
+				<p class="no-content">Aucun Chat disponible pour ce client.</p>
+			{% else %}
+				{% for forum in forums %}
+					<div class="forum-entry mb-4">
+						<p><strong>Date :</strong> {{ forum.date|date('d/m/Y H:i') }}</p>
+						<pre class="forum-content">{{ forum.content }}</pre>
+						<a href="{{ path('app_adminforum_edit', {id: forum.id, clientId: forum.client.id}) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+						<form action="{{ path('app_adminforum_delete', {id: forum.id}) }}" method="POST" style="display:inline;">
+							<button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce Chat ?');">Supprimer</button>
+						</form>
+						<hr>
+					</div>
+				{% endfor %}
+			{% endif %}
 		</div>
 
-		<br>
+		<!-- Formulaire d'ajout de résumé -->
+		<div id="add-summary" class="mt-5">
+			<h4>Ajouter un nouveau Chat :</h4>
+			<textarea id="summary-text" rows="6" placeholder="Entrez votre résumé ici..." class="form-control mb-3"></textarea>
+			<button id="submit-summary" class="btn btn-primary btn-lg">Envoyer le Chat</button>
+		</div>
+	</div>
 
-		<!-- Footer -->
-		<footer>
-			<p><b>© Copyright @ 2024 par <span style="color: #d7df22;">Cabinet PAGOS</span> | tous droits réservés.</b></p>
-		</footer>
+	<br>
 
-		<!-- JS de Bootstrap et dépendances -->
-		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-		<script>
-			document.getElementById('submit-summary').addEventListener('click', function () {
-				const summaryText = document.getElementById('summary-text').value;
-				const clientId = '{{ client.id }}'; // Assurez-vous que client_id est bien disponible
-
-				if (summaryText) {
-					fetch(`/client/${clientId}/forum`, {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							content: summaryText
-						})
-					})
-						.then(response => response.json())
-						.then(data => {
-							if (data.content && data.date) { // Ajout du résumé à la liste affichée
-								const newEntry = document.createElement('div');
-								newEntry.classList.add('forum-entry', 'mb-4');
-								newEntry.innerHTML = `
-									<p><strong>Date :</strong> ${new Date(data.date).toLocaleString()}</p>
-									<pre class="forum-content">${data.content}</pre>
-									<hr>
-								`;
-								document.getElementById('forum-contents').appendChild(newEntry);
-								document.getElementById('summary-text').value = ''; // Réinitialise le champ texte
-							} else {
-								alert('Erreur lors de l\'ajout du résumé.');
-							}
-						})
-						.catch(error => alert('Erreur : ' + error.message));
-				} else {
-					alert('Veuillez entrer un résumé avant de l\'envoyer.');
-				}
-			});
-		</script>
-	</body>
-</html>
+	<!-- JS de Bootstrap et dépendances -->
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+	<script src="{{ asset('./assets/js/forumAdmin.js') }}"></script>
+{% endblock %}

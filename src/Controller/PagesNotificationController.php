@@ -76,14 +76,20 @@ class PagesNotificationController extends AbstractController
             'visible' => true
         ]);
 
-        // Créer un tableau pour lier codeWebtask à id
+        // Créer un tableau pour lier codeWebtask à id et récupérer les informations de description et commentaire
         $idWebtaskMap = [];
         foreach ($notifications as $notification) {
-            $idWebtask = $this->webTaskRepository->findIdByCodeWebtask($notification->getCodeWebtask());
-            if ($idWebtask !== null) {
-                $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
+            // Comparer le code_webtask de la notification avec le code de webtask
+            $webtask = $webtaskRepository->findOneBy(['code' => $notification->getCodeWebtask()]);
+            if ($webtask) {
+                // Récupérer description et commentaire_webtask_client
+                $idWebtaskMap[$notification->getCodeWebtask()] = [
+                    'description' => $webtask->getDescription(),
+                    'commentaireWebtaskClient' => $webtask->getCommentaireWebtaskClient()
+                ];
             }
         }
+        
         return $this->render('Client/notification.html.twig', [
             'forums' => $forums, // Passer les résumés à la vue
             'client' => $client, // Passer le client à la vue

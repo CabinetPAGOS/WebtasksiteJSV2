@@ -7,8 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse; // Ajoutez cette ligne
-use App\Repository\UserRepository; // Assurez-vous que ce repository existe
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\UserRepository;
 use App\Entity\Forum;
 use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
@@ -83,7 +83,6 @@ class ForumController extends AbstractController
                 $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
             }
         }
-
         return $this->render('Admin/forum.html.twig', [
             'forums' => $forums, // Passer les résumés à la vue
             'client' => $client, // Passer le client à la vue
@@ -94,17 +93,14 @@ class ForumController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/forum/edit/{id}', name: 'app_adminforum_edit', methods: ['GET', 'POST'])]
-    public function edit(Forum $forum, Request $request, EntityManagerInterface $em, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
+    #[Route('/admin/forum/edit/{id}/{clientId}', name: 'app_adminforum_edit', methods: ['GET', 'POST'])]
+    public function edit(Forum $forum, Request $request, EntityManagerInterface $em, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository, $clientId): Response
     {
         // Créez le formulaire
         $form = $this->createForm(ForumType::class, $forum);
         $form->handleRequest($request);
 
         $user = $this->getUser();
-
-
-        // Récupérer l'ID du client associé à l'utilisateur connecté
         $idclient = $user->getIdclient();
 
         // Vérifier si un client est associé à l'utilisateur
@@ -112,9 +108,23 @@ class ForumController extends AbstractController
             throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
         }
 
+        // Récupérer le logo du client
         $logo = null;
         if ($idclient->getLogo()) {
             $logo = base64_encode(stream_get_contents($idclient->getLogo()));
+        }
+
+        $clientId = $request->get('clientId'); // Récupère l'ID du client à partir de l'URL
+
+        if ($clientId) {
+            $client = $em->getRepository(Client::class)->find($clientId);
+            if (!$client) {
+                throw $this->createNotFoundException('Client introuvable.');
+            }
+            // Associer les forums avec ce client
+            $forums = $this->forumRepository->findBy(['client' => $client]);
+        } else {
+            throw $this->createNotFoundException('Aucun ID de client fourni.');
         }
 
         // Traitement de la soumission
@@ -132,7 +142,7 @@ class ForumController extends AbstractController
         // Créer un tableau pour lier codeWebtask à id
         $idWebtaskMap = [];
         foreach ($notifications as $notification) {
-            $idWebtask = $this->webTaskRepository->findIdByCodeWebtask($notification->getCodeWebtask());
+            $idWebtask = $webtaskRepository->findIdByCodeWebtask($notification->getCodeWebtask());
             if ($idWebtask !== null) {
                 $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
             }
@@ -144,6 +154,8 @@ class ForumController extends AbstractController
             'logo' => $logo,
             'idWebtaskMap' => $idWebtaskMap,
             'notifications' => $notifications,
+            'client' => $client, // Passer le client à la vue
+            'forums' => $forums, // Passer les forums à la vue
         ]);
     }
 
@@ -172,7 +184,6 @@ class ForumController extends AbstractController
             $logo = base64_encode(stream_get_contents($idclient->getLogo()));
         }
 
-
         $notifications = $notificationRepository->findBy([
             'user' => $user->getId(),
             'visible' => true
@@ -196,7 +207,7 @@ class ForumController extends AbstractController
             $forum = new Forum();
             $forum->setContent($data['content']);
             $forum->setClient($client);
-            $forum->setDate(new \DateTime()); // Assurez-vous que la date est bien définie
+            $forum->setDate(new \DateTime());
 
             $entityManager->persist($forum);
             $entityManager->flush();
@@ -211,7 +222,6 @@ class ForumController extends AbstractController
                 'idWebtaskMap' => $idWebtaskMap,
             ], Response::HTTP_CREATED);
         }
-
         return new JsonResponse(['error' => 'Le contenu du résumé est vide'], Response::HTTP_BAD_REQUEST);
     }
 
@@ -248,7 +258,6 @@ class ForumController extends AbstractController
         if (!$notification) {
             return new JsonResponse(['status' => 'not_found'], 404);
         }
-
         // Mettre à jour le champ visible à 0
         $notification->setVisible(0); // Assurez-vous que vous avez une méthode pour cela
 

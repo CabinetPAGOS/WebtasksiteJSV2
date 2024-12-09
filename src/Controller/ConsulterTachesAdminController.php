@@ -31,10 +31,10 @@ class ConsulterTachesAdminController extends AbstractController
 
     public function __construct(
         WebtaskRepository $webTaskRepository,
-        UserRepository $userRepository, 
-        VersionService $versionService, 
-        TextTransformer $textTransformer, 
-        EntityManagerInterface $entityManager, 
+        UserRepository $userRepository,
+        VersionService $versionService,
+        TextTransformer $textTransformer,
+        EntityManagerInterface $entityManager,
         NotificationRepository $notificationRepository,
         ClientRepository $clientRepository
 
@@ -46,28 +46,37 @@ class ConsulterTachesAdminController extends AbstractController
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
         $this->clientRepository = $clientRepository;
-
     }
 
     #[Route('admin/consultertaches', name: 'app_consultertachesadmin', methods: ['GET'])]
-    public function consultertachesadmin(Request $request, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response       
+    public function consultertachesadmin(Request $request, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
     {
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
-    
+
         // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
 
         // Récupérer l'ID du client associé à l'utilisateur connecté
-        $idclient = $user->getIdclient(); 
+        // / Récupérer l'ID du client associé à l'utilisateur connecté
+        $idclient = $user->getIdclient();
 
         // Vérifier si un client est associé à l'utilisateur
         if (!$idclient) {
             throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
         }
 
+        // Récupérer le client à partir de l'ID
+        $client = $this->clientRepository->find($idclient);
+
+        if (!$client) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+
+        // Récupérer les Webtasks associées à cet ID client
+        $webtasks = $webtaskRepository->findBy(['idclient' => $idclient]);
         // Récupérer le logo du client
         $logo = null;
         if ($idclient->getLogo()) {
@@ -88,10 +97,10 @@ class ConsulterTachesAdminController extends AbstractController
                 $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
             }
         }
-        
+
         $id = $request->query->get('id');
         $webtask = $this->webTaskRepository->findOneBy(['code' => $id]);
-    
+
         if (!$webtask) {
             throw $this->createNotFoundException('Aucune tâche disponible');
         }
@@ -100,26 +109,26 @@ class ConsulterTachesAdminController extends AbstractController
         $client = $this->entityManager->getRepository(Client::class)->find($webtask->getIdclient());
 
         $raisonSociale = $client ? $client->getRaisonSociale() : 'Client inconnu';
-        
+
         $versionLibelle = $this->versionService->getLibelleById($webtask->getIdversion());
         $webtask->setVersionLibelle($versionLibelle);
-    
+
         // Transformer les champs de texte
         $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
         $webtask->setCommentaireWebtaskClient($this->textTransformer->transformCrToNewLine($webtask->getCommentaireWebtaskClient()));
         $webtask->setCommentaireInternePagos($this->textTransformer->transformCrToNewLine($webtask->getCommentaireInternePagos()));
-    
+
         $anciennesWebtasks = $this->webTaskRepository->findBy(['Webtask' => $webtask->getWebtask()]);
 
         usort($anciennesWebtasks, function ($a, $b) {
             // Comparaison sur le champ 'idversion' en décroissant
             $idversionComparison = strcmp($a->getIdversion(), $b->getIdversion());
-        
+
             if ($idversionComparison === 0) {
                 // Si 'idversion' est identique, on trie par 'filtre' en décroissant
                 return strcmp($a->getFiltre(), $b->getFiltre());
             }
-        
+
             return $idversionComparison;
         });
 
@@ -245,7 +254,7 @@ class ConsulterTachesAdminController extends AbstractController
             } else {
                 $isPagosUser = false; // Si le nom et prénom ne sont pas bien formés
             }
-        
+
             $anciennesWebtasksDetails[] = [
                 'creeLe' => $task->getCreeLe(),
                 'creePar' => $formatNomPrenom,
@@ -260,13 +269,13 @@ class ConsulterTachesAdminController extends AbstractController
 
             ];
         }
-    
+
         // Récupération des commentaires
         $commentaires = [
             'client' => $webtask->getCommentaireWebtaskClient(),
             'interne' => $webtask->getCommentaireInternePagos(),
         ];
-    
+
         // Initialiser les commentaires en tant que tableau
         $commentairesListe = [];
         if (!empty($commentaires['client'])) {
@@ -281,16 +290,16 @@ class ConsulterTachesAdminController extends AbstractController
                 'contenu' => $commentaires['interne']
             ];
         }
-    
+
         // Tri des commentaires par type (client en premier, interne ensuite)
-        usort($commentairesListe, function($a, $b) {
+        usort($commentairesListe, function ($a, $b) {
             return strcmp($a['type'], $b['type']);
         });
-    
+
         $mappedTag = $this->mapTag($webtask->getTag());
         $tagClass = $this->getTagClass($webtask->getTag());
         $mappedAvancement = $this->mapAvancementDeLaTache($webtask->getAvancementdelatache());
-    
+
         return $this->render('Admin/consultertaches.html.twig', [
             'webtask' => $webtask,
             'raisonSociale' => $raisonSociale,
@@ -306,6 +315,8 @@ class ConsulterTachesAdminController extends AbstractController
             'logo' => $logo,
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
+            'client' => $client,
+
         ]);
     }
 

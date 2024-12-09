@@ -1,0 +1,125 @@
+/* Conteneur principal */
+.notification-client-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #eef2f7;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.notification-client-container .page-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #000;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Liste des notifications */
+.notification-client-list {
+    list-style: none;
+    padding: 0;
+}
+
+.no-notifications {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+    margin-top: 20px;
+}
+
+/* Notifications par client */
+.client-notification {
+    margin-bottom: 30px;
+}
+
+.client-header h3 {
+    font-size: 22px;
+    color: #000000;
+    border-bottom: 3px solid #0056b3;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Notifications individuelles */
+.notification-details {
+    list-style: none;
+    padding-left: 20px;
+    border-left: 2px dashed #c4c4c4;
+}
+
+.notification-item {
+    background: #ffffff;
+    margin-bottom: 15px;
+    padding: 15px;
+    padding-bottom: 50px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+.notification-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.notification-content {
+    margin-bottom: 20px;
+}
+
+.notification-date {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.notification-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0;
+}
+
+.notification-message {
+    font-size: 16px;
+    color: #555;
+}
+
+/* Boutons d'action */
+.notification-actions {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.notification-actions .btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.notification-actions .btn-read {
+    background: #28a745;
+    color: #ffffff;
+}
+
+.notification-actions .btn-read:hover {
+    background: #218838;
+}
+
+.notification-actions .btn-view {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.notification-actions .btn-view:hover {
+    background: #0056b3;
+}

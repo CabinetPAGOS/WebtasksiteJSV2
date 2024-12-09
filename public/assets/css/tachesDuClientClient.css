@@ -1,0 +1,232 @@
+/* Custom Rectangle */
+.custom-rectangle {
+    position: relative;
+    border: 2px solid #000;
+    padding: 25px;
+    margin: 20px;
+    width: 100%;
+    max-width: 430px; /* Réduit la largeur maximale */
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Empêche le débordement du texte */
+}
+
+.custom-rectangle h2 {
+    text-align: center;
+    color: #000000;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #d7df22;
+    font-size: 18px; /* Réduit la taille de la police du titre */
+    white-space: normal; /* Permet le retour à la ligne */
+    margin-bottom: 20px;
+    overflow: visible; /* Permet d'afficher le texte complet */
+    text-overflow: clip; /* Ne coupe pas le texte avec des points de suspension */
+    display: block; /* Assure que le texte utilise text-overflow */
+}
+
+h1 {
+    text-align: center;
+    color: #000000;
+}
+
+.container-custom {
+    display: flex;
+    flex-wrap: wrap; /* Permet plusieurs colonnes */
+    justify-content: center; /* Centre le contenu */
+    margin: 20px;
+}
+
+/* Button Styles */
+.container-custom .btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid black;
+    margin-right: 10px;
+    padding: 10px 20px; /* Espacement interne du bouton */
+    font-size: 16px; /* Taille de la police */
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Transition pour les effets de survol */
+}
+
+.container-custom .btn-secondary:hover {
+    background-color: #6c757d; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol */
+    transform: translateY(-3px); /* Effet de levée au survol */
+    border-color: #6c757d; /* Couleur de bordure au survol */
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center; /* Centre les boutons */
+    gap: 15px; /* Espace entre les boutons */
+    margin-top: 20px;
+}
+
+/* Container pour la barre de recherche et le bouton de filtrage */
+.search-filter-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 20px; /* Espace sous la barre */
+}
+
+/* Barre de recherche personnalisée */
+.custom-search-bar {
+    display: flex;
+    margin-top: 30px;
+    margin-left: 75px;
+}
+
+.custom-search-input {
+    width: 900px; /* Largeur de la barre de recherche */
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+/* Dropdown avancement personnalisé */
+.custom-dropdown .avancement-dropdown {
+    position: relative;
+}
+
+.avancement-dropdown .custom-filter-button {
+    margin-top: 30px;
+    margin-left : 40px;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dropdown pilote personnalisé */
+.custom-dropdown .pilote-dropdown {
+    position: relative;
+}
+
+.pilote-dropdown .custom-filter-button {
+    margin-top: 30px;
+    margin-left : 20px;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Customisation des listes déroulantes */
+.custom-filter-button:hover {
+    background-color: #d7df22;
+    color: #fff;
+}
+
+.custom-dropdown-menu {
+    border-radius: 10px;
+    border: 2px solid #000;
+    padding: 10px;
+}
+
+.custom-dropdown-item {
+    padding: 10px;
+    font-size: 16px;
+    color: #000;
+}
+
+.custom-dropdown-item:hover {
+    background-color: #d7df22;
+    color: #fff;
+}
+
+/* Style Tag */
+.tag-minor {
+    background-color: #00B050;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-serious {
+    background-color: #FFC000;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-blocking {
+    background-color: #FF0000;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-unknown {
+    background-color: grey;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* Style Avancement */
+.text-npc { color: #ff0000; font-weight: bold; }
+.text-pc { color: #ffc000; font-weight: bold; }
+.text-t { color: #00b050; font-weight: bold; }
+.text-a { color: #FF0000; font-weight: bold; background-color: #00C995; }
+.text-r { color: #ffffff; font-weight: bold; background-color: #000000; }
+.text-v { color: #04C49E; font-weight: bold; background-color: #000000; }
+.text-sc { color: #ffffff; font-weight: bold; background-color: #C92093; }
+.text-gc { color: #000000; font-weight: bold; background-color: #00B050; }
+
+.hidden {
+    display: none;
+}
+
+.page-info {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.center-button-container {
+    display: flex;
+    justify-content: center; /* Centre les boutons horizontalement */
+    align-items: center; /* Centre les boutons verticalement */
+    margin: 20px 0;
+}
+
+.center-button {
+    background-color: #818285; /* Couleur de fond du bouton */
+    color: #fff; /* Couleur du texte du bouton */
+    border: 2px solid #000; /* Bordure du bouton */
+    padding: 10px 20px; /* Espacement interne du bouton */
+    font-size: 16px; /* Taille de la police */
+    border-radius: 25px; /* Bordures arrondies */
+    transition: all 0.3s ease; /* Transition pour les effets de survol */
+    cursor: pointer; /* Curseur pointer au survol */
+    margin: 0 10px; /* Espacement horizontal entre les boutons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-button i {
+    margin: 0 5px; /* Espacement autour des icônes */
+}
+
+.center-button:hover {
+    background-color: #6c757d; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol */
+    border-color: #6c757d; /* Couleur de bordure au survol */
+    transform: translateY(-3px); /* Effet de levée au survol */
+}
+
+.center-button:focus {
+    outline: none; /* Enlève le contour de focus */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Ombre de focus */
+}

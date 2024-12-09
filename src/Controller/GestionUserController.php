@@ -37,7 +37,6 @@ class GestionUserController extends AbstractController
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
         $this->clientRepository = $clientRepository;
-
     }
 
     #[Route('/gestionutilisateur', name: 'app_gestionuser')]
@@ -74,12 +73,6 @@ class GestionUserController extends AbstractController
 
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
-
-        // Récupérer le logo du client
-        $logo = null;
-        if ($idclient->getLogo()) {
-            $logo = base64_encode(stream_get_contents($idclient->getLogo()));
-        }
 
         // Récupérer les notifications visibles de l'utilisateur connecté
         $notifications = $notificationRepository->findBy([
@@ -147,7 +140,6 @@ class GestionUserController extends AbstractController
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
             'client' => $client,
-
         ]);
     }
 
@@ -182,7 +174,7 @@ class GestionUserController extends AbstractController
 
         return new JsonResponse(['status' => 'success']);
     }
-    
+
     #[Route('/reset-password/{id}', name: 'app_reset_password', methods: ['GET', 'POST'])]
     public function resetPassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, string $id): Response
     {
@@ -319,7 +311,7 @@ class GestionUserController extends AbstractController
         // Rediriger vers la gestion des utilisateurs
         return $this->redirectToRoute('app_gestionuser');
     }
-    
+
     // Méthode pour générer une couleur hexadécimale à partir d'une chaîne
     private function generateColorFromString(string $string): string
     {

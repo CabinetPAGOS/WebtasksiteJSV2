@@ -1,6 +1,6 @@
 <?php
-// src/Controller/ClientsdePagosAdminController.php
 
+// src/Controller/ClientsdePagosAdminController.php
 namespace App\Controller;
 
 use App\Repository\ClientRepository;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\UserRepository; // Assurez-vous que ce repository existe
+use App\Repository\UserRepository;
 use App\Entity\Forum;
 use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,12 +43,9 @@ class ClientsdePagosController extends AbstractController
     #[Route('/clientsdepagos', name: 'app_clientsdepagos')]
     public function clientsdepagos(ClientRepository $clientRepository, Request $request, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
     {
-        // Récupérer l'utilisateur connecté
         $user = $this->getUser();
-
-        // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
+        if (!$user || (!$this->isGranted('ROLE_USER') && !$this->isGranted('ROLE_ADMIN'))) {
+            throw $this->createAccessDeniedException('Accès interdit');
         }
         
         // Récupérer l'ID du client associé à l'utilisateur connecté
@@ -145,7 +142,6 @@ class ClientsdePagosController extends AbstractController
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
             'client' => $client,
-
         ]);
     }
 

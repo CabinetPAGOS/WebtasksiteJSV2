@@ -25,14 +25,16 @@ class ClientsdePagosAdminController extends AbstractController
     private $userRepository;
     private $entityManager;
     private $notificationRepository;
+    private $clientRepository;
 
     public function __construct(
         WebtaskRepository $webTaskRepository,
-        VersionService $versionService, 
-        TextTransformer $textTransformer, 
+        VersionService $versionService,
+        TextTransformer $textTransformer,
         UserRepository $userRepository,
-        EntityManagerInterface $entityManager, 
-        NotificationRepository $notificationRepository
+        EntityManagerInterface $entityManager,
+        NotificationRepository $notificationRepository,
+        ClientRepository $clientRepository
     ) {
         $this->webTaskRepository = $webTaskRepository;
         $this->versionService = $versionService;
@@ -40,11 +42,14 @@ class ClientsdePagosAdminController extends AbstractController
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
+        $this->clientRepository = $clientRepository;
     }
 
     #[Route('/admin/clientsdepagos', name: 'app_clientsdepagosadmin')]
     public function clientsdepagosadmin(ClientRepository $clientRepository, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository, Request $request): Response
     {
+        $selectedAvancement = $request->query->get('filter', 'all');
+
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
 
@@ -52,13 +57,100 @@ class ClientsdePagosAdminController extends AbstractController
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
-        
+
         // Récupérer l'ID du client associé à l'utilisateur connecté
-        $idclient = $user->getIdclient(); 
+        $idclient = $user->getIdclient();
 
         // Vérifier si un client est associé à l'utilisateur
         if (!$idclient) {
             throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
+        }
+
+        // Récupérer l'ID du client associé à l'utilisateur connecté
+        $idclient = $user->getIdclient();
+
+        // Vérifier si un client est associé à l'utilisateur
+        if (!$idclient) {
+            throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
+        }
+
+        // Récupérer le client à partir de l'ID
+        $client = $this->clientRepository->find($idclient);
+
+        if (!$client) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+        // Récupérer les Webtasks associées à cet ID client
+        $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
+
+
+        // Filtrer les tâches avec un état d'avancement 'ON'
+        $webtasksON = array_filter($webtasks, function ($webtask) {
+            return $webtask->getEtatDeLaWebtask() === 'ON';
+        });
+
+        // Extraire les pilotes avec initiales (format: Initiale. NOM)
+        $pilotes = [];
+        foreach ($webtasksON as $webtask) {
+            $piloteId = $webtask->getPiloteid();
+            if ($piloteId) {
+                $piloteKey = $piloteId->getId();
+                if (!isset($pilotes[$piloteKey])) {
+                    $prenom = $piloteId->getPrenom();
+                    $nom = $piloteId->getNom();
+
+                    $pilotes[$piloteKey] = [
+                        'prenom' => $piloteId->getPrenom(),
+                        'initiale' => strtoupper(mb_substr($prenom, 0, 1)) . '.', // Convertit l'initiale en majuscule
+                        'nom' => strtoupper($nom) // Convertit le nom complet en majuscule
+
+                    ];
+                }
+            }
+        }
+
+        // Trier les pilotes par nom et prénom dans l'ordre croissant
+        uasort($pilotes, function ($a, $b) {
+            // Comparer d'abord par le nom, puis par le prénom
+            $nomComparison = strcmp($a['nom'], $b['nom']);
+            if ($nomComparison === 0) {
+                // Si les noms sont identiques, trier par prénom
+                return strcmp($a['prenom'], $b['prenom']);
+            }
+            return $nomComparison;
+        });
+
+        // Appliquer au filtre
+        if (!empty($filterByPilote)) {
+            $webtasksON = array_filter($webtasksON, function ($webtask) use ($filterByPilote) {
+                return $webtask->getPiloteid() && $webtask->getPiloteid()->getId() == $filterByPilote;
+            });
+        }
+
+        // Appliquer le filtre par statut d'avancement si spécifié
+        if ($selectedAvancement !== 'all') {
+            $webtasksON = array_filter($webtasksON, function ($webtask) use ($selectedAvancement) {
+                switch ($selectedAvancement) {
+                    case 'nonPriseEnCompte':
+                        return $webtask->getAvancementDeLaTache() === '0';
+                    case 'priseEnCompte':
+                        return $webtask->getAvancementDeLaTache() === '1';
+                    case 'terminee':
+                        return $webtask->getAvancementDeLaTache() === '2';
+                    case 'amelioration':
+                        return $webtask->getAvancementDeLaTache() === '3';
+                    case 'refusee':
+                        return $webtask->getAvancementDeLaTache() === '4';
+                    case 'validee':
+                        return $webtask->getAvancementDeLaTache() === '5';
+                    case 'stopClient':
+                        return $webtask->getAvancementDeLaTache() === '6';
+                    case 'goClient':
+                        return $webtask->getAvancementDeLaTache() === '7';
+                    default:
+                        return true; // Renvoie toutes les tâches si le filtre ne correspond à rien
+                }
+            });
         }
 
         // Récupérer le logo du client
@@ -69,48 +161,52 @@ class ClientsdePagosAdminController extends AbstractController
 
         $excludedId = 'e4e080b3758761bd01758f5fcfed03d9';
         $clients = $clientRepository->findAll();
- 
+
+        $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
+
+        $webtask->mappedAvancement = $this->mapAvancementDeLaTache($webtask->getAvancementdelatache());
+
         // Filtrer les clients par leur ID exclu
         $filteredClients = array_filter($clients, function ($client) use ($excludedId) {
             return $client->getId() !== $excludedId;
         });
- 
+
         // Récupérer la requête de recherche (query)
         $query = $request->query->get('query');
- 
+
         // Si une requête de recherche est envoyée, filtrer les clients
         if ($query) {
-            $filteredClients = array_filter($filteredClients, function($client) use ($query) {
+            $filteredClients = array_filter($filteredClients, function ($client) use ($query) {
                 return stripos($client->getRaisonSociale(), $query) !== false;
             });
         }
- 
+
         // Récupérer le critère de tri (tri par défaut : raisonSociale)
         $sortBy = $request->query->get('sort_by', 'raisonSociale');
         $sortOrder = $request->query->get('sort_order', 'asc'); // 'asc' pour croissant, 'desc' pour décroissant
- 
+
         // Trier les clients
-        usort($filteredClients, function($a, $b) use ($sortBy, $sortOrder) {
+        usort($filteredClients, function ($a, $b) use ($sortBy, $sortOrder) {
             $valueA = $a->{'get' . ucfirst($sortBy)}();
             $valueB = $b->{'get' . ucfirst($sortBy)}();
- 
+
             if ($sortOrder === 'asc') {
                 return $valueA <=> $valueB;
             } else {
                 return $valueB <=> $valueA;
             }
         });
- 
+
         // Créer un tableau associatif avec les informations du client, y compris le logo encodé
         $clientsData = [];
         foreach ($filteredClients as $client) {
             $logoBase64 = null;
- 
+
             // Si un logo est disponible, on l'encode en base64
             if ($client->getLogo()) {
                 $logoBase64 = base64_encode(stream_get_contents($client->getLogo()));
             }
- 
+
             $clientsData[] = [
                 'id' => $client->getId(),
                 'raisonSociale' => $client->getRaisonSociale(),
@@ -146,6 +242,8 @@ class ClientsdePagosAdminController extends AbstractController
             'logo' => $logo,
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
+            'client' => $client,
+            'selectedAvancement' => $selectedAvancement,
         ]);
     }
 
@@ -162,7 +260,6 @@ class ClientsdePagosAdminController extends AbstractController
             'id' => $user->getId(),
             'name' => $user->getName(),
             'email' => $user->getEmail(),
-            // Ajoutez ici les informations supplémentaires à afficher
         ];
 
         return new JsonResponse($data);
@@ -214,7 +311,7 @@ class ClientsdePagosAdminController extends AbstractController
         // Si une requête de recherche est envoyée, filtrer les webtasks sur le champ `titre`
         if ($query) {
             $query = strtolower($query); // Convertir en minuscule pour une recherche insensible à la casse
-            $webTasks = array_filter($webTasks, function($webTask) use ($query) {
+            $webTasks = array_filter($webTasks, function ($webTask) use ($query) {
                 return stripos(strtolower($webTask->getTitre()), $query) !== false ||
                     stripos(strtolower($webTask->getWebtask()), $query) !== false ||
                     stripos(strtolower($webTask->getCode()), $query) !== false;
@@ -222,7 +319,7 @@ class ClientsdePagosAdminController extends AbstractController
         }
 
         // Trier les webtasks par le champ `webtask` dans l'ordre croissant
-        usort($webTasks, function($a, $b) {
+        usort($webTasks, function ($a, $b) {
             return strcmp($a->getWebtask(), $b->getWebtask());
         });
 
@@ -298,5 +395,21 @@ class ClientsdePagosAdminController extends AbstractController
         $this->entityManager->flush();
 
         return new JsonResponse(['status' => 'success']);
+    }
+
+    private function mapAvancementDeLaTache(?int $avancement): array
+    {
+        $avancements = [
+            0 => ['label' => 'Non Prise en Compte', 'class' => 'text-npc'],
+            1 => ['label' => 'Prise en Compte', 'class' => 'text-pc'],
+            2 => ['label' => 'Terminée', 'class' => 'text-t'],
+            3 => ['label' => '❇️ Amélioration ❇️', 'class' => 'text-a'],
+            4 => ['label' => '⛔️ Refusée ⛔️', 'class' => 'text-r'],
+            5 => ['label' => '✅ Validée', 'class' => 'text-v'],
+            6 => ['label' => '❌ Stop Client ❌', 'class' => 'text-sc'],
+            7 => ['label' => '😃 Go Client 😃', 'class' => 'text-gc']
+        ];
+
+        return $avancements[$avancement] ?? ['label' => 'Inconnu', 'class' => 'text-muted'];
     }
 }

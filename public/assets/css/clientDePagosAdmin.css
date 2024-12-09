@@ -1,0 +1,228 @@
+/* Centrage du titre principal */
+.title {
+    text-align: center;
+    font-size: 2rem;
+    color: #000;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Container pour les clients */
+.client-container {
+    position: relative;
+    border: 2px solid #000;
+    padding: 30px;
+    margin: 20px auto;
+    width: 95%;
+    max-width: 1200px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Carte des clients */
+.client-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Tableau des clients */
+.client-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    border: 2px solid #000;
+}
+
+.client-table th, .client-table td {
+    padding: 15px;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #000;
+}
+
+.client-table th {
+    background-color: #d7df22;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.client-table td {
+    background-color: #fff;
+    color: #333;
+}
+
+/* Survol des lignes du tableau sans changement de curseur */
+.client-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Espacement et alignement des logos des clients */
+.client-img {
+    max-width: 80px;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.client-img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Réinitialisation du style pour la liste des utilisateurs */
+.client-table ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.client-table li {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* Style des boutons */
+.btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #000;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+    transform: translateY(-3px);
+    border-color: #6c757d;
+}
+
+/* Style pour la barre de recherche */
+.search-bar {
+    display: flex;
+    margin-top: 30px;
+    margin-left: 75px;
+}
+
+.search-input {
+    width: 62.2%;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+/* Style pour les webtasks */
+.webtask-container {
+    display: flex;
+    flex-wrap: wrap; /* Permet plusieurs colonnes */
+    justify-content: center; /* Centre le contenu */
+    margin: 20px;
+}
+
+.webtask-card {
+    position: relative;
+    border: 2px solid #000;
+    padding: 25px;
+    margin: 20px;
+    width: 100%;
+    max-width: 430px; /* Réduit la largeur maximale */
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Empêche le débordement du texte */
+}
+
+.webtask-card h2 {
+    text-align: center;
+    color: #000000;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #d7df22;
+    font-size: 18px; /* Réduit la taille de la police du titre */
+    white-space: normal; /* Permet le retour à la ligne */
+    margin-bottom: 20px;
+    overflow: visible; /* Permet d'afficher le texte complet */
+    text-overflow: clip; /* Ne coupe pas le texte avec des points de suspension */
+    display: block; /* Assure que le texte utilise text-overflow */
+}
+
+.webtask-card ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.webtask-card ul li {
+    margin-bottom: 10px;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center; /* Centre les boutons */
+    gap: 15px; /* Espace entre les boutons */
+    margin-top: 20px;
+}
+
+.btn-group .btn {
+    margin-right: 10px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.webtask-card .btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid black;
+    margin-right: 10px;
+    padding: 10px 20px; /* Espacement interne du bouton */
+    font-size: 16px; /* Taille de la police */
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Transition pour les effets de survol */
+}
+
+.webtask-card .btn-secondary:hover {
+    background-color: #6c757d; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol */
+    transform: translateY(-3px); /* Effet de levée au survol */
+    border-color: #6c757d; /* Couleur de bordure au survol */
+}
+
+.webtask-card .btn-secondary:last-child {
+    margin-right: 0;
+}
+
+/* Style de base pour la fenêtre modale */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}

@@ -1,0 +1,312 @@
+/* Style global de la navbar */
+.navbar-custom {
+    background-color: #818285; /* Couleur de fond principale */
+    padding: 10px 20px; /* Espacement autour de la navbar */
+}
+
+/* Logo dans la navbar */
+.navbar-custom .navbar-brand img {
+    width: auto;
+    height: 80px;
+}
+
+/* Boutons et liens de la navbar */
+.navbar-custom .navbar-nav .nav-link {
+    color: #fff; /* Couleur du texte des liens */
+    font-weight: bold;
+    text-transform: uppercase; /* Mettre en majuscules */
+    padding: 10px 15px;
+    transition: color 0.3s ease; /* Transition pour le changement de couleur */
+}
+
+.navbar-custom .navbar-nav .nav-link:hover {
+    color: #000000; /* Couleur au survol */
+}
+
+.navbar-custom .navbar-nav .nav-item.active .nav-link {
+    color: #000000; /* Couleur pour l'élément actif */
+}
+
+.nav-link.active {
+    background-color: black; /* Fond noir */
+    color: white !important; /* Texte blanc */
+    border-radius: 5px; /* Coins arrondis */
+}
+
+/* Dropdown (menu déroulant) */
+.navbar-custom .navbar-nav .nav-item.dropdown .nav-link {
+    color: #fff; /* Couleur du lien de la dropdown */
+    border-bottom: 2px solid transparent; /* Ajouter une bordure discrète */
+    padding-bottom: 5px;
+}
+
+.navbar-custom .navbar-nav .nav-item.dropdown:hover .nav-link {
+    color: #000000; /* Couleur de la dropdown au survol */
+    border-bottom: 2px solid #000000; /* Bordure colorée au survol */
+}
+
+/* Dropdown Menu - Section ADMINISTRATION */
+.navbar-custom .navbar-nav .dropdown-menu {
+    background: linear-gradient(135deg, #6c6e70, #818285);
+    border: 1px solid #4a4a4a;
+    border-radius: 10px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    min-width: 400px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 15px;
+}
+
+.admin-client-user,
+.admin-global {
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none !important; 
+}
+
+/* Section ADMINISTRATION GLOBALE */
+.admin-global {
+    flex: 1;
+    border-right: 2px solid #4a4a4a;
+    padding-right: 15px;
+    margin-right: 15px;
+}
+
+.admin-global .dropdown-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #4a4a4a;
+}
+
+.admin-global .dropdown-item {
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.admin-global .dropdown-item:hover {
+    background: #000000;
+    color: #ffffff;
+}
+
+/* Section ADMINISTRATION CLIENT & USER */
+.admin-client-user {
+    flex: 1; /* Prend 50% de l'espace */
+}
+
+.admin-client-user .dropdown-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #4a4a4a; /* Ligne sous le titre */
+}
+
+/* Séparateur horizontal entre CLIENT et USER */
+.admin-client-user .client-section {
+    margin-bottom: 20px; /* Espacement entre les sections */
+    border-bottom: 2px dashed #4a4a4a; /* Ligne horizontale */
+    padding-bottom: 15px;
+}
+
+.admin-client-user .dropdown-item {
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.admin-client-user .dropdown-item:hover {
+    background: #000000; /* Fond sombre au survol */
+    color: #ffffff;
+}
+
+/* Lien actif */
+.navbar-custom .navbar-nav .dropdown-menu .dropdown-item.active {
+    background: #000000; /* Dégradé élégant pour l'élément actif */
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre subtile */
+}
+
+/* Animation d'apparition */
+.navbar-custom .navbar-nav .dropdown:hover .dropdown-menu {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Style pour le nom de l'utilisateur */
+.user-name {
+    color: #000;
+    font-size: 1rem;
+    margin-top: 0.4rem;
+}
+
+/* Logo client adaptable pour formats carré et rectangulaire */
+.client-logo {
+    max-height: 40px;
+    max-width: 60px; /* Taille max pour gérer les logos rectangulaires */
+    object-fit: contain;
+    border-radius: 8px;
+    padding: 2px;
+    background-color: #fff;
+    transition: transform 0.2s ease;
+}
+
+.client-logo:hover {
+    transform: scale(1.1);
+}
+
+/* Icône de déconnexion */
+.logout-icon {
+    font-size: 1.5rem;
+    color: #000;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.logout-icon:hover {
+    color: #818285;
+    transform: scale(1.1);
+}
+
+/* Notifications */
+.notification-container {
+    position: relative; /* Pour permettre le positionnement de la liste de notifications */
+    margin-right: 15px; /* Espacement à droite pour ne pas être collé aux éléments adjacents */
+    display: flex; /* Utilisation de flex pour aligner les éléments */
+    align-items: center; /* Alignement vertical centré */
+}
+
+#notificationIcon {
+    font-size: 24px; /* Taille de l'icône de notification */
+    color: white; /* Couleur de l'icône */
+    position: relative; /* Pour positionner le compteur */
+    cursor: pointer; /* Change le curseur lors du survol */
+}
+
+.notification-count {
+    position: absolute; /* Positionnement absolu par rapport à l'icône */
+    top: 0px; /* Ajuste la position verticale */
+    right: -2px; /* Ajuste la position horizontale */
+    background-color: red; /* Couleur d'arrière-plan pour le compteur */
+    color: white; /* Couleur du texte */
+    border-radius: 50%; /* Arrondi pour un style circulaire */
+    padding: 3px 7px; /* Espacement intérieur */
+    font-size: 12px; /* Taille du texte */
+    font-weight: bold; /* Gras pour le compteur */
+}
+
+.notifications {
+    border: 2px solid #000; /* Bordure autour de la liste de notifications */
+    background-color: #fff; /* Couleur d'arrière-plan */
+    position: absolute; /* Positionnement absolu */
+    z-index: 1000; /* S'assurer qu'il est au-dessus des autres éléments */
+    width: 600px;
+    top: -210px; /* Ajustez selon vos besoins */
+    right: 0; /* Aligne le conteneur à droite */
+    margin-top: 250px; /* Espacement au-dessus de la liste */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre pour le conteneur */
+    padding: 2px; /* Espacement intérieur */
+}
+
+.notifications ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notifications li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc; /* Bordure en bas */
+    font-size: 12px; /* Taille de police réduite */
+}
+
+/* Supprime la bordure du dernier élément */
+.notifications li:last-child {
+    border-bottom: none; 
+}
+
+/* Header de notification */
+.notification-header {
+    display: flex; /* Utilise flexbox pour aligner les éléments */
+    justify-content: space-between; /* Espace entre le nom et la date */
+    align-items: center; /* Centrage vertical */
+}
+
+/* Style de la date de création */
+.creation-date {
+    font-size: 0.9em; /* Taille de police plus petite pour la date */
+    color: #666; /* Couleur de texte grise pour la date */
+}
+
+/* Corps de la notification */
+.notification-body {
+    margin-bottom: 10px; /* Ajoute un espace entre le corps et les boutons */
+}
+
+/* Boutons de notification */
+.notification-buttons {
+    display: flex; /* Utilise flexbox pour aligner les boutons */
+    justify-content: flex-end; /* Aligne les boutons à droite */
+    gap: 10px; /* Espace entre les boutons */
+}
+
+.notification-buttons button {
+    padding: 5px 10px; /* Espacement intérieur des boutons */
+    margin: 0 2px; /* Espacement horizontal entre les boutons */
+    cursor: pointer; /* Curseur pointer pour les boutons */
+    border: none; /* Pas de bordure */
+    border-radius: 5px; /* Coins arrondis */
+    background-color: #007bff; /* Couleur d'arrière-plan des boutons */
+    color: white; /* Couleur du texte des boutons */
+    transition: background-color 0.3s; /* Transition pour l'effet de survol */
+}
+
+.notification-buttons .btn-read {
+    background: #28a745;
+    color: #ffffff;
+}
+
+.notification-buttons .btn-read:hover {
+    background: #218838;
+}
+
+.notification-buttons .btn-view {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.notification-buttons .btn-view:hover {
+    background: #0056b3;
+}
+
+.d-none {
+    display: none;
+}

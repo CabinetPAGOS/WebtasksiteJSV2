@@ -75,12 +75,6 @@ class ClientAdminController extends AbstractController
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
 
-        // Récupérer le logo du client
-        $logo = null;
-        if ($idclient->getLogo()) {
-            $logo = base64_encode(stream_get_contents($idclient->getLogo()));
-        }
-
         $client = new Client();
 
         // Créer le formulaire

@@ -1,0 +1,146 @@
+/* STYLE CONTAINER PRINCIPAL */
+.title {
+    text-align: center;
+    background-color: #d7df22;
+    padding: 1rem 25rem;
+    border-radius: 5px;
+    max-width: fit-content;
+    margin: 10px auto;
+}
+
+.form {
+    background: white;
+    padding: 1rem;
+    border-radius: 5px;
+    max-width: 82%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1 1 calc(33.33% - 1rem);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.form-group div {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.placeholder-diagonal::placeholder {
+    transform: rotate(-15deg); /* Rotation du placeholder */
+    opacity: 0.6; /* Opacité pour un effet plus doux */
+}
+
+/* Button Styles */
+.form .btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid black;
+    margin-right: 10px;
+    padding: 10px 20px; /* Espacement interne du bouton */
+    font-size: 16px; /* Taille de la police */
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Transition pour les effets de survol */
+}
+
+.form .btn-secondary:hover {
+    background-color: #6c757d; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol */
+    transform: translateY(-3px); /* Effet de levée au survol */
+    border-color: #6c757d; /* Couleur de bordure au survol */
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center; /* Centre les boutons */
+    gap: 15px; /* Espace entre les boutons */
+    margin-top: 20px;
+}
+
+/* Styles pour les tags */
+.tag-minor {
+    background-color: green;
+    font-weight: bold;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.tag-serious {
+    background-color: yellow;
+    font-weight: bold;
+    color: black;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.tag-blocking {
+    background-color: red;
+    font-weight: bold;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.tag-unknown {
+    background-color: grey;
+    font-weight: bold;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* Style pour le drop-area */
+#drop-area {
+    border: 2px dashed #000;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+.file-details {
+    margin-top: 15px;
+}
+
+.btn-custom-green {
+    background-color: green;
+    color: white;
+}
+.btn-custom-red {
+    background-color: red;
+    color: white;
+}

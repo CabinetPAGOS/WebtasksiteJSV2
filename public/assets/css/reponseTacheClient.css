@@ -1,0 +1,221 @@
+/* Styles pour les titres avec fond coloré séparé */
+.title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.title01 {
+    background-color: #d7df22;
+    padding: 1rem 10rem;
+    border-radius: 5px;
+    margin: 0 0.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.title02 {
+    background-color: #d7df22;
+    padding: 1rem 5rem;
+    border-radius: 5px;
+    margin: 0 0.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.title:nth-child(1)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 1rem;
+    height: 100%;
+    background: white;
+    z-index: -1;
+}
+
+.title:nth-child(2)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 1rem;
+    height: 100%;
+    background: white;
+    z-index: -1;
+}
+
+/* Styles spécifiques pour le formulaire */
+.form {
+    background: white;
+    padding: 1rem;
+    border-radius: 5px;
+    max-width: 82%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1 1 calc(33.33% - 1rem);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.form-group div {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.placeholder-diagonal::placeholder {
+    transform: rotate(-15deg); /* Rotation du placeholder */
+    opacity: 0.6; /* Opacité pour un effet plus doux */
+}
+
+/* STYLE POUR LA DESCRIPTION */
+.description-text {
+    color: #1AC2DD; /* Couleur bleu ciel */
+}
+
+/* Button Styles */
+.form .btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid black;
+    margin-right: 10px;
+    padding: 10px 20px; /* Espacement interne du bouton */
+    font-size: 16px; /* Taille de la police */
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Transition pour les effets de survol */
+}
+
+.form .btn-secondary:hover {
+    background-color: #6c757d; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol */
+    transform: translateY(-3px); /* Effet de levée au survol */
+    border-color: #6c757d; /* Couleur de bordure au survol */
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center; /* Centre les boutons */
+    gap: 15px; /* Espace entre les boutons */
+    margin-top: 20px;
+}
+
+/* Style Tag */
+.tag-minor {
+    background-color: #00B050;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-serious {
+    background-color: #FFC000;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-blocking {
+    background-color: #FF0000;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+.tag-unknown {
+    background-color: grey;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* Style Avancement */
+.text-npc { color: #ff0000; font-weight: bold; }
+.text-pc { color: #ffc000; font-weight: bold; }
+.text-t { color: #00b050; font-weight: bold; }
+.text-a { color: #FF0000; font-weight: bold; background-color: #00C995; }
+.text-r { color: #ffffff; font-weight: bold; background-color: #000000; }
+.text-v { color: #04C49E; font-weight: bold; background-color: #000000; }
+.text-sc { color: #ffffff; font-weight: bold; background-color: #C92093; }
+.text-gc { color: #000000; font-weight: bold; background-color: #00B050; }
+
+/* Style pour le drop-area */
+#drop-area {
+    border: 2px dashed #000;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.file-details {
+    margin-top: 15px;
+}
+
+.btn-custom-green {
+    background-color: green;
+    color: 
+    white;
+}
+.btn-custom-red {
+    background-color: red;
+    color: white;
+}

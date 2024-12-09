@@ -36,7 +36,6 @@ class ImportExportController extends AbstractController
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
         $this->clientRepository = $clientRepository;
-
     }
 
     #[Route('/admin/importExport', name: 'app_importexport')]
@@ -73,12 +72,6 @@ class ImportExportController extends AbstractController
 
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
-
-        // Récupérer le logo du client
-        $logo = null;
-        if ($idclient->getLogo()) {
-            $logo = base64_encode(stream_get_contents($idclient->getLogo()));
-        }
 
         // Récupérer les notifications visibles de l'utilisateur connecté
         $notifications = $notificationRepository->findBy([
@@ -304,7 +297,7 @@ class ImportExportController extends AbstractController
         $this->addFlash('info', 'Importation des fichiers CSV terminée.');
         return $this->redirectToRoute('app_importexport');
     }
-    
+
     #[Route('/admin/import-webtasks', name: 'app_import_webtasks', methods: ['POST'])]
     public function importWebTasks(Request $request, Connection $conn, EntityManagerInterface $entityManager): Response
     {
@@ -312,21 +305,21 @@ class ImportExportController extends AbstractController
             $this->addFlash('error', 'La méthode de requête n\'est pas POST');
             return $this->redirectToRoute('app_importexport');
         }
-    
+
         // Dossier d'entrée et d'archive
         $inputDir = $this->getParameter('kernel.project_dir') . '/public/WEBTASK/webtask/in/';
         $archiveDir = $this->getParameter('kernel.project_dir') . '/public/WEBTASK/webtask/archive/';
-    
+
         // Récupérer tous les fichiers CSV dans le dossier d'entrée (inclut csv et CSV)
         $csvFiles = glob($inputDir . '*.csv');
         $csvFiles = array_merge($csvFiles, glob($inputDir . '*.CSV'));
-    
+
         // Si aucun fichier CSV n'est trouvé
         if (empty($csvFiles)) {
             $this->addFlash('error', 'Aucun fichier CSV trouvé dans le dossier d\'entrée.');
             return $this->redirectToRoute('app_importexport');
         }
-    
+
         // Supprimer toutes les données de la table webtask
         $conn->executeStatement('DELETE FROM webtask');
 
@@ -336,28 +329,28 @@ class ImportExportController extends AbstractController
                 $this->addFlash('error', "Le fichier CSV est vide : " . basename($local_file));
                 continue;
             }
-    
+
             // Nettoyage du fichier CSV
             $path_info = pathinfo($local_file);
             $output_file = $path_info['dirname'] . '/' . $path_info['filename'] . '_clean.' . $path_info['extension'];
-    
+
             $handle_in = fopen($local_file, 'r');
             if ($handle_in === false) {
                 $this->addFlash('error', 'Erreur lors de l\'ouverture du fichier CSV d\'entrée : ' . basename($local_file));
                 continue;
             }
-    
+
             $handle_out = fopen($output_file, 'w');
             if ($handle_out === false) {
                 $this->addFlash('error', 'Erreur lors de la création du fichier CSV de sortie : ' . basename($local_file));
                 fclose($handle_in);
                 continue;
             }
-    
+
             // Parcourir chaque ligne du fichier CSV d'entrée
             while (($data = fgetcsv($handle_in, 100000, ";")) !== false) {
                 $data = array_slice($data, 0, 37); // Limiter à 37 colonnes
-    
+
                 foreach ($data as &$field) {
                     $field = str_replace('<cr/>', "\n", $field);
                     $field = str_replace('"', '', $field); // Enlève les guillemets
@@ -370,20 +363,20 @@ class ImportExportController extends AbstractController
                         $field = 0;
                     }
                 }
-    
+
                 fputcsv($handle_out, $data, ";");
             }
-    
+
             fclose($handle_in);
             fclose($handle_out);
-    
+
             // ---- Insertion en base de données ----
             $handle_clean = fopen($output_file, 'r');
             if ($handle_clean === false) {
                 $this->addFlash('error', 'Erreur lors de l\'ouverture du fichier CSV nettoyé : ' . basename($local_file));
                 continue;
             }
-    
+
             $insertQuery = 'INSERT INTO webtask (
                 code, libelle, idclient_id, titre, webtask, description, entite, tag, iddemandeur_id,
                 responsable_id, piloteid_id, estimation_temps, date_fin_demandee, avancement_de_la_tache,
@@ -392,21 +385,21 @@ class ImportExportController extends AbstractController
                 recommandations, idversion, etat_version, idtracabilite, webtask_mere, filtre, baseclient, sylob5, cree_le, creer_par, nom_doc_export
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
             $stmt = $conn->prepare($insertQuery);
-            
+
             $rowCount = 0;
             while (($data = fgetcsv($handle_clean, 100000, ";")) !== false) {
                 if (count($data) == 37) { // Vérifie que la ligne contient 37 colonnes dans le fichier CSV
                     $code = $data[1]; // Le code est la deuxième colonne du fichier CSV
-                    
+
                     // Vérifie si le code existe déjà dans la base
                     $existingWebtask = $conn->fetchOne('SELECT COUNT(*) FROM webtask WHERE code = ?', [$code]);
                     if ($existingWebtask > 0) {
                         continue; // Si le code existe déjà, ignore cette ligne
                     }
-                    
+
                     // Retire la première colonne (id) pour correspondre aux 36 champs restants
                     $data = array_slice($data, 1);
-                    
+
                     if (count($data) == 36) { // Vérifie après suppression qu'il reste bien 36 colonnes
                         try {
                             $stmt->execute($data);
@@ -423,23 +416,24 @@ class ImportExportController extends AbstractController
             }
             fclose($handle_clean);
             $this->addFlash('success', "$rowCount WebTasks importés avec succès depuis le fichier " . basename($local_file));
-    
+
             // Déplacer les fichiers CSV vers le dossier d'archive
             if (file_exists($local_file)) {
                 $localFileArchived = $archiveDir . basename($local_file);
                 rename($local_file, $localFileArchived);
             }
-    
+
             if (file_exists($output_file)) {
                 $outputFileArchived = $archiveDir . basename($output_file);
                 rename($output_file, $outputFileArchived);
             }
 
-             // ---- Création de notifications excluant le CABINET PAGOS ----
+            // ---- Création de notifications excluant le CABINET PAGOS ----
             $webtasks = $entityManager->getRepository(WebTask::class)->findAll();
 
             foreach ($webtasks as $webtask) {
-                if ($webtask->getCommentaireWebtaskClient() && 
+                if (
+                    $webtask->getCommentaireWebtaskClient() &&
                     !$entityManager->getRepository(Notification::class)->findOneBy(['codeWebtask' => $webtask->getCode()])
                 ) {
                     $client = $webtask->getIdclient();
@@ -463,18 +457,18 @@ class ImportExportController extends AbstractController
             }
             $entityManager->flush();
         }
-    
+
         // Fin du processus d'importation, avec un seul message de succès
         $this->addFlash('info', 'Importation des fichiers CSV terminée.');
         return $this->redirectToRoute('app_importexport');
-    } 
-    
+    }
+
     #[Route('/export/webtasks', name: 'app_export_webtasks')]
     public function exportWebtasks(): Response
     {
         // Utiliser le service entityManager injecté
         $webtaskRepository = $this->entityManager->getRepository(Webtask::class);
-        
+
         // Trouver toutes les webtasks avec sylob5 = 0 et nomDocExport non renseigné
         $webtasks = $webtaskRepository->createQueryBuilder('w')
             ->where('w.sylob5 = :sylob5')

@@ -1,6 +1,6 @@
 <?php
-// src/Controller/PagesNotificationAdminController.php
 
+// src/Controller/PagesNotificationAdminController.php
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,28 +39,28 @@ class PagesNotificationAdminController extends AbstractController
     {
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
-
+    
         // Vérifiez si l'utilisateur est connecté
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
-
+    
         $idclient = $user->getIdclient();
-
+    
         // Vérifier si un client est associé à l'utilisateur
         if (!$idclient) {
             throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
         }
-
+    
         // Récupérer le logo du client
         $logo = null;
         if ($idclient->getLogo()) {
             $logo = base64_encode(stream_get_contents($idclient->getLogo()));
         }
-
+    
         // Récupérer l'ID du client depuis les paramètres d'URL
         $clientId = $request->query->get('id'); // Changer 'client_id' en 'id'
-
+    
         // Vérifiez si l'ID du client est fourni
         if ($clientId) {
             // Récupérer le client
@@ -70,24 +70,31 @@ class PagesNotificationAdminController extends AbstractController
         } else {
             throw $this->createNotFoundException('Aucun ID de client fourni.');
         }
-
+    
+        // Récupérer les notifications de l'utilisateur
         $notifications = $notificationRepository->findBy([
             'user' => $user->getId(),
             'visible' => true
         ]);
-
-        // Créer un tableau pour lier codeWebtask à id
+    
+        // Créer un tableau pour lier codeWebtask à id et récupérer les informations de description et commentaire
         $idWebtaskMap = [];
         foreach ($notifications as $notification) {
-            $idWebtask = $this->webTaskRepository->findIdByCodeWebtask($notification->getCodeWebtask());
-            if ($idWebtask !== null) {
-                $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
+            // Comparer le code_webtask de la notification avec le code de webtask
+            $webtask = $webtaskRepository->findOneBy(['code' => $notification->getCodeWebtask()]);
+            if ($webtask) {
+                // Récupérer description et commentaire_webtask_client
+                $idWebtaskMap[$notification->getCodeWebtask()] = [
+                    'description' => $webtask->getDescription(),
+                    'commentaireWebtaskClient' => $webtask->getCommentaireWebtaskClient()
+                ];
             }
         }
+
         return $this->render('Admin/notification.html.twig', [
-            'forums' => $forums, // Passer les résumés à la vue
-            'client' => $client, // Passer le client à la vue
-            'client_id' => $clientId, // Passer l'ID du client à la vue si nécessaire
+            'forums' => $forums,
+            'client' => $client,
+            'client_id' => $clientId,
             'notifications' => $notifications,
             'logo' => $logo,
             'idWebtaskMap' => $idWebtaskMap,

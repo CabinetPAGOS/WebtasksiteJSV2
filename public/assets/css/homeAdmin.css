@@ -1,48 +1,4 @@
-body {
-    font-family: 'Helvetica', Arial, sans-serif;
-}
-/* Navbar */
-.navbar-custom {
-    background-color: #818285;
-    border-style: none;
-}
-
-.navbar-custom .nav-link {
-    color: #ffffff;
-    font-size: 19px;
-}
-
-.navbar-custom .nav-link:hover {
-    color: #000000;
-}
-
-.img-navbar {
-    width: 100%;
-    height: 80px;
-}
-
-.navbar-toggler-icon {
-    color: white;
-}
-
-.dropdown-menu {
-    background-color: #818285;
-}
-
-.dropdown-menu .dropdown-header {
-    color: #ffffff;
-    font-size: 16px;
-}
-
-.dropdown-menu .dropdown-item {
-    color: #ff0000;
-}
-
-.dropdown-menu .dropdown-item:hover {
-    background-color: #818285;
-    color: #ffffff;
-}
-
+/* STYLE CONTAINER PRINCIPAL */
 .container-custom {
     display: flex;
     justify-content: space-between;
@@ -134,7 +90,7 @@ hr {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Ombre pour le relief */
 }
 
-.client-logo {
+.client-logo-central {
     max-width: 70%; /* Limiter la largeur du logo */
     max-height: 70%; /* Limiter la hauteur du logo */
     object-fit: contain; /* Garder le ratio du logo */
@@ -256,14 +212,19 @@ hr {
 
 .icon-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);  /* Deux colonnes */
-    gap: 10px;  /* Espacement entre les icônes */
+    grid-template-columns: repeat(2, 1fr); /* Deux colonnes */
+    gap: 10px; /* Espacement entre les icônes */
 }
 
 .icon-container {
     display: flex;
     flex-direction: column; /* Affiche le contenu en colonne */
     align-items: center; /* Centre horizontalement */
+}
+
+.icon-container a {
+    text-decoration: none; /* Enlève la ligne soulignée */
+    color: inherit;        /* Maintient la couleur originale du texte ou de l'icône */
 }
 
 .black-block {
@@ -274,7 +235,7 @@ hr {
     flex-direction: column; /* Affiche le contenu en colonne */
     justify-content: center;
     align-items: center;
-    width: 80px;  /* Largeur des icônes */
+    width: 80px; /* Largeur des icônes */
 }
 
 .green-block {
@@ -285,7 +246,7 @@ hr {
     flex-direction: column; /* Affiche le contenu en colonne */
     justify-content: center;
     align-items: center;
-    width: 80px;  /* Largeur des icônes */
+    width: 80px; /* Largeur des icônes */
 }
 
 .red-block {
@@ -296,7 +257,7 @@ hr {
     flex-direction: column; /* Affiche le contenu en colonne */
     justify-content: center;
     align-items: center;
-    width: 80px;  /* Largeur des icônes */
+    width: 80px; /* Largeur des icônes */
 }
 
 .iconeTheme {
@@ -306,32 +267,32 @@ hr {
 
 .light-circle-npc {
     position: absolute;
-    top: 20px;  /* Ajustez cette valeur en fonction de la position de la lumière supérieure */
+    top: 20px; /* Ajustez cette valeur en fonction de la position de la lumière supérieure */
     width: 15px;
     height: 15px;
     background-color: #FF0000;
     border-radius: 50%;
-    box-shadow: inset 0px 0px 0px 2px #000000;
+    box-shadow: inset 0 0 0 2px #000000;
 }
 
 .light-circle-pc {
     position: absolute;
-    top: 36px;  /* Ajustez cette valeur en fonction de la position de la lumière supérieure */
+    top: 36px; /* Ajustez cette valeur en fonction de la position de la lumière supérieure */
     width: 15px;
     height: 15px;
     background-color: #FFA500;
     border-radius: 50%;
-    box-shadow: inset 0px 0px 0px 2px #000000;
+    box-shadow: inset 0 0 0 2px #000000;
 }
 
 .light-circle-t {
     position: absolute;
-    top: 52px;  /* Ajustez cette valeur en fonction de la position de la lumière supérieure */
+    top: 52px; /* Ajustez cette valeur en fonction de la position de la lumière supérieure */
     width: 15px;
     height: 15px;
     background-color: #008000;
     border-radius: 50%;
-    box-shadow: inset 0px 0px 0px 2px #000000;
+    box-shadow: inset 0 0 0 2px #000000;
 }
 
 .status-text h5 {
@@ -346,7 +307,7 @@ hr {
     background-color: red;
     color: white;
     font-size: 13px;
-    padding: 2px 2px;
+    padding: 2px;
     position: absolute;
     top: -5px;
     right: -20px;
@@ -418,16 +379,4 @@ hr {
     justify-content: center; /* Centre les boutons */
     gap: 15px; /* Espace entre les boutons */
     margin-top: 20px;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 20px 0;
-    background-color: #f4f4f4;
-    border-top: 1px solid #ccc;
-}
-
-footer p {
-    color: #333;
 }

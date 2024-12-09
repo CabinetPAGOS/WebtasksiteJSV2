@@ -1,6 +1,6 @@
 <?php
-// src/Controller/TachesAdminController.php
 
+// src/Controller/TachesAdminController.php
 namespace App\Controller;
 
 use App\Entity\Notification;
@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ClientRepository;
 
-
 class TachesAdminController extends AbstractController
 {
     private $webTaskRepository;
@@ -25,7 +24,6 @@ class TachesAdminController extends AbstractController
     private $entityManager;
     private $notificationRepository;
     private $clientRepository;
-
 
     public function __construct(
         WebtaskRepository $webTaskRepository,
@@ -85,12 +83,6 @@ class TachesAdminController extends AbstractController
 
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
-
-        // Récupérer le logo du client
-        $logo = null;
-        if ($idclient->getLogo()) {
-            $logo = base64_encode(stream_get_contents($idclient->getLogo()));
-        }
 
         // Filtrer les tâches avec un état d'avancement 'ON'
         $webtasksON = array_filter($webtasks, function ($webtask) {
@@ -212,6 +204,7 @@ class TachesAdminController extends AbstractController
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
             'client' => $client,
+
         ]);
     }
 

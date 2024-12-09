@@ -21,15 +21,18 @@ class RegistrationController extends AbstractController
     private $webTaskRepository;
     private $entityManager;
     private $notificationRepository;
+    private $clientRepository;
 
     public function __construct(
         WebtaskRepository $webTaskRepository, 
         EntityManagerInterface $entityManager, 
-        NotificationRepository $notificationRepository
+        NotificationRepository $notificationRepository,
+        ClientRepository $clientRepository
     ) {
         $this->webTaskRepository = $webTaskRepository;
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
+        $this->clientRepository = $clientRepository;
     }
 
     #[Route('/admin/register', name: 'app_register')]
@@ -43,13 +46,29 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        // Récupérer l'ID du client associé à l'utilisateur connecté
-        $idclient = $utilisateur->getIdclient(); 
+        $user = $this->getUser();
 
-        // Vérifier si un client est associé à l'utilisateur
-        if (!$idclient) {
-            throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
+        // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
         }
+
+       // Récupérer l'ID du client associé à l'utilisateur connecté
+       $idclient = $user->getIdclient();
+
+       // Vérifier si un client est associé à l'utilisateur
+       if (!$idclient) {
+           throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
+       }
+
+       // Récupérer le client à partir de l'ID
+       $client = $this->clientRepository->find($idclient);
+
+       if (!$client) {
+           throw $this->createNotFoundException('Client non trouvé');
+       }
+       // Récupérer les Webtasks associées à cet ID client
+       $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
 
         // Récupérer le logo du client
         $logo = null;
@@ -108,6 +127,7 @@ class RegistrationController extends AbstractController
             'clients' => $clients,
             'logo' => $logo,
             'notifications' => $notifications,
+            'client' => $client,
         ]);
     }
 

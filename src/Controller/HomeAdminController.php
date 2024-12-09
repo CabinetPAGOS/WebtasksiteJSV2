@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ClientRepository;
 
-
 class HomeAdminController extends AbstractController
 {
     private $webTaskRepository;
@@ -25,15 +24,13 @@ class HomeAdminController extends AbstractController
     private $notificationRepository;
     private $clientRepository;
 
-
     public function __construct(
         WebtaskRepository $webTaskRepository, 
         VersionService $versionService, 
         TextTransformer $textTransformer, 
         EntityManagerInterface $entityManager, 
         NotificationRepository $notificationRepository,
-        ClientRepository $clientRepository
-
+        ClientRepository $clientRepository,
     ) {
         $this->webTaskRepository = $webTaskRepository;
         $this->versionService = $versionService;
@@ -41,7 +38,6 @@ class HomeAdminController extends AbstractController
         $this->entityManager = $entityManager;
         $this->notificationRepository = $notificationRepository;
         $this->clientRepository = $clientRepository;
-
     }
 
     #[Route('/admin/home', name: 'app_homeadmin')]
@@ -85,11 +81,6 @@ class HomeAdminController extends AbstractController
 
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
-        // Récupérer le logo du client
-        $logo = null;
-        if ($idclient->getLogo()) {
-            $logo = base64_encode(stream_get_contents($idclient->getLogo()));
-        }
 
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $webtaskRepository->findBy(['idclient' => $idclient]);
@@ -216,7 +207,6 @@ class HomeAdminController extends AbstractController
             'idWebtaskMap' => $idWebtaskMap,
             'isPilote' => $isPilote,
             'client' => $client,
-
         ]);
     }
 

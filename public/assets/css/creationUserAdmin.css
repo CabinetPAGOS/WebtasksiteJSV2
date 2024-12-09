@@ -1,0 +1,90 @@
+/* CONTAINER PRINCIPAL */
+.custom-rectangle {
+    position: relative;
+    border: 2px solid #818285; /* Bordure avec couleur spécifique */
+    padding: 30px; /* Espacement intérieur */
+    margin: 20px auto; /* Centre le bloc */
+    width: 100%;
+    max-width: 700px; /* Largeur maximale du bloc */
+    background-color: #fff; /* Fond blanc */
+    border-radius: 15px; /* Coins arrondis */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Ombre douce */
+}
+
+.form-title {
+    text-align: center; /* Centre le titre */
+    background-color: #d7df22; /* Fond jaune */
+    padding: 10px; /* Espacement autour du texte */
+    font-weight: bold; /* Texte en gras */
+    border-radius: 5px; /* Coins arrondis pour le titre */
+}
+
+.form-group {
+    margin-top: 20px;
+    margin-bottom: 20px; /* Espace entre les groupes */
+}
+
+.form-group label {
+    font-weight: bold; /* Labels en gras */
+    text-decoration: underline; /* Souligne les labels */
+}
+
+.form-control {
+    width: 100%; /* Prend toute la largeur */
+    padding: 10px; /* Espacement intérieur */
+    border: 1px solid #818285; /* Bordure couleur spécifiée */
+    border-radius: 5px; /* Coins arrondis */
+    font-size: 16px; /* Taille de police uniforme */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre intérieure */
+    transition: border 0.3s; /* Transition douce pour les bordures */
+}
+
+.form-control:focus {
+    border-color: #d7df22; /* Changement de couleur au focus */
+    outline: none; /* Supprime le contour par défaut */
+}
+
+/* Styles pour les cases à cocher des rôles */
+.roles-checkbox {
+    display: flex; /* Aligner horizontalement les éléments */
+    flex-direction: row; /* Afficher les éléments sur la même ligne */
+    gap: 10px; /* Réduire l'espacement entre les rôles */
+    margin-top: 10px; /* Espacement au-dessus des cases à cocher */
+}
+
+.roles-checkbox label {
+    display: flex; /* Aligner la case à cocher et le texte */
+    align-items: center; /* Centrer verticalement le texte avec la case */
+    font-weight: normal; /* Ne pas mettre en gras */
+    text-decoration: none; /* Ne pas souligner */
+}
+
+.roles-checkbox input[type="checkbox"] {
+    margin-right: 5px; /* Réduire l'espacement entre la case à cocher et le texte */
+}
+
+/* Button Styles */
+.btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid black;
+    margin-right: 10px;
+    padding: 10px 20px; /* Espacement interne du bouton */
+    font-size: 16px; /* Taille de la police */
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Transition pour les effets de survol */
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d; /* Couleur de fond au survol */
+    color: #fff; /* Couleur du texte au survol */
+    transform: translateY(-3px); /* Effet de levée au survol */
+    border-color: #6c757d; /* Couleur de bordure au survol */
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center; /* Centre les boutons */
+    gap: 15px; /* Espace entre les boutons */
+    margin-top: 20px;
+}

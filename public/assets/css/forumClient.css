@@ -1,0 +1,77 @@
+/* STYLE CONTAINER PRINCIPAL */
+.container-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px auto;
+    max-width: 1400px;
+}
+
+hr {
+    margin: 20px 0;
+    opacity: 1;
+    border: 2px solid #000;
+}
+
+.bottom-rectangle {
+    border-radius: 0;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(to right, #6c757d, #343a40);
+    padding: 60px 0;
+    color: #fff;
+}
+
+.hero-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-section p {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #f1f1f1;
+    margin-top: 10px;
+}
+
+/* Forum Entries */
+.container.mt-5 {
+    margin-top: 50px;
+}
+
+.forum-entry {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.forum-entry p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.forum-entry pre {
+    font-family: 'Poppins', sans-serif;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 1rem;
+    color: #333;
+}
+
+.forum-entry hr {
+    border: 1px solid #e0e0e0;
+    margin-top: 20px;
+}
+
+.no-content {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    font-size: 1.2rem;
+}

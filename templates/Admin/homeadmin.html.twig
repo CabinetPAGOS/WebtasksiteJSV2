@@ -155,7 +155,7 @@
 				<div class="container-task" id="taskContainer">
 					{% for webtask in webtasks %}
 						{% if webtask.etatdelawebtask == 'ON' and webtask.piloteid is not null and webtask.piloteid.id == app.user.id %}
-							<div class="custom-task" 
+							<div class="custom-task " 
                             data-code="{{ webtask.webtask }}" 
                             data-titre="{{ webtask.titre }}" 
                             data-avancement="{{ webtask.avancementdelatache }}" 
@@ -165,7 +165,7 @@
                                 <li><b><u>WebTask :</u></b> {{ webtask.webtask }}</li>
                                 <li><b><u>Description :</u></b> {{ webtask.description|nl2br }}</li>    
                                 <li><b><u>Date de fin demandée :</u></b> {{ webtask.datefinDemandee }}</li>
-                                <li><b><u>Avancement de la tâche :</u></b> <span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span></li>
+                            	<li><b><u>Avancement de la tâche :</u></b> <span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span></li>
                                 <li><b><u>Créateur :</u></b>  {{ (webtask.iddemandeur.prenom[:1] ~ '. ' ~ webtask.iddemandeur.nom)|upper }}</li>
                                 <li><b><u>Responsable :</u></b> {{ (webtask.responsable.prenom[:1] ~ '. ' ~ webtask.responsable.nom)|upper }}</li>
                                 <li><b><u>Pilote :</u></b> {{ (webtask.piloteid.prenom[:1] ~ '. ' ~ webtask.piloteid.nom)|upper }}</li>

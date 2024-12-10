@@ -51,8 +51,11 @@ class HomeController extends AbstractController
     }
 
     #[Route('/home', name: 'app_homeclient')]
-    public function base(SessionInterface $session, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
+    public function base(SessionInterface $session, Request $request, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
     {
+
+        $selectedAvancement = $request->query->get('filter', 'all'); // Remplace `filter` par `selectedAvancement`
+
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
 
@@ -91,6 +94,75 @@ class HomeController extends AbstractController
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
 
+        // Filtrer les tâches avec un état d'avancement 'ON'
+        $webtasksON = array_filter($webtasks, function ($webtask) {
+            return $webtask->getEtatDeLaWebtask() === 'ON';
+        });
+
+        // Extraire les pilotes avec initiales (format: Initiale. NOM)
+        $pilotes = [];
+        foreach ($webtasksON as $webtask) {
+            $piloteId = $webtask->getPiloteid();
+            if ($piloteId) {
+                $piloteKey = $piloteId->getId();
+                if (!isset($pilotes[$piloteKey])) {
+                    $prenom = $piloteId->getPrenom();
+                    $nom = $piloteId->getNom();
+
+                    $pilotes[$piloteKey] = [
+                        'prenom' => $piloteId->getPrenom(),
+                        'initiale' => strtoupper(mb_substr($prenom, 0, 1)) . '.', // Convertit l'initiale en majuscule
+                        'nom' => strtoupper($nom) // Convertit le nom complet en majuscule
+
+                    ];
+                }
+            }
+        }
+
+        // Trier les pilotes par nom et prénom dans l'ordre croissant
+        uasort($pilotes, function ($a, $b) {
+            // Comparer d'abord par le nom, puis par le prénom
+            $nomComparison = strcmp($a['nom'], $b['nom']);
+            if ($nomComparison === 0) {
+                // Si les noms sont identiques, trier par prénom
+                return strcmp($a['prenom'], $b['prenom']);
+            }
+            return $nomComparison;
+        });
+
+        // Appliquer au filtre
+        if (!empty($filterByPilote)) {
+            $webtasksON = array_filter($webtasksON, function ($webtask) use ($filterByPilote) {
+                return $webtask->getPiloteid() && $webtask->getPiloteid()->getId() == $filterByPilote;
+            });
+        }
+
+        // Appliquer le filtre par statut d'avancement si spécifié
+        if ($selectedAvancement !== 'all') {
+            $webtasksON = array_filter($webtasksON, function ($webtask) use ($selectedAvancement) {
+                switch ($selectedAvancement) {
+                    case 'nonPriseEnCompte':
+                        return $webtask->getAvancementDeLaTache() === '0';
+                    case 'priseEnCompte':
+                        return $webtask->getAvancementDeLaTache() === '1';
+                    case 'terminee':
+                        return $webtask->getAvancementDeLaTache() === '2';
+                    case 'amelioration':
+                        return $webtask->getAvancementDeLaTache() === '3';
+                    case 'refusee':
+                        return $webtask->getAvancementDeLaTache() === '4';
+                    case 'validee':
+                        return $webtask->getAvancementDeLaTache() === '5';
+                    case 'stopClient':
+                        return $webtask->getAvancementDeLaTache() === '6';
+                    case 'goClient':
+                        return $webtask->getAvancementDeLaTache() === '7';
+                    default:
+                        return true; // Renvoie toutes les tâches si le filtre ne correspond à rien
+                }
+            });
+        }
+
         // Convertir les dates en objets DateTime pour le tri
         usort($webtasks, function ($a, $b) {
             $dateA = \DateTime::createFromFormat('d/m/Y', $a->getDateFinDemandee());
@@ -104,8 +176,6 @@ class HomeController extends AbstractController
             $mappedTag = $this->mapTag($tagValue);
             $webtask->setTag($mappedTag);
 
-            $avancementValue = $webtask->getAvancementDeLaTache();
-            $mappedAvancement = $this->mapAvancementDeLaTache($avancementValue);
 
             $idVersion = $webtask->getIdversion();
             if ($idVersion === null) {
@@ -114,9 +184,13 @@ class HomeController extends AbstractController
                 $webtask->versionLibelle = $this->versionService->getLibelleById($idVersion);
             }
 
-            $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
+            $webtask->mappedTag = $this->mapTag($webtask->getTag());
             $webtask->mappedAvancement = $this->mapAvancementDeLaTache($webtask->getAvancementdelatache());
+            $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
 
+            $avancementValue = $webtask->getAvancementDeLaTache();
+            $mappedAvancement = $this->mapAvancementDeLaTache($avancementValue)['label'];
+            $webtask->setAvancementDeLaTache($mappedAvancement);
 
             return $webtask;
         }, $webtasks);
@@ -300,7 +374,7 @@ class HomeController extends AbstractController
         return $this->render('Client/forum.html.twig', [
             'forums' => $forums,
             'client' => $client,
-            'logo' => $logo, 
+            'logo' => $logo,
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
         ]);

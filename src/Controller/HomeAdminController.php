@@ -41,8 +41,10 @@ class HomeAdminController extends AbstractController
     }
 
     #[Route('/admin/home', name: 'app_homeadmin')]
-    public function homeadmin(WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
+    public function homeadmin(WebtaskRepository $webtaskRepository, Request $request, NotificationRepository $notificationRepository): Response
     {
+        $selectedAvancement = $request->query->get('filter', 'all'); // Remplace `filter` par `selectedAvancement`
+
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
 
@@ -85,6 +87,12 @@ class HomeAdminController extends AbstractController
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $webtaskRepository->findBy(['idclient' => $idclient]);
 
+        // Filtrer les tâches avec un état d'avancement 'ON'
+        $webtasksON = array_filter($webtasks, function ($webtask) {
+            return $webtask->getEtatDeLaWebtask() === 'ON';
+        });
+
+
         // Convertir les dates en objets DateTime pour le tri
         usort($webtasks, function($a, $b) {
             $dateA = \DateTime::createFromFormat('d/m/Y', $a->getDateFinDemandee());
@@ -94,14 +102,37 @@ class HomeAdminController extends AbstractController
             return $dateA <=> $dateB;
         });
 
+        // Appliquer le filtre par statut d'avancement si spécifié
+        if ($selectedAvancement !== 'all') {
+            $webtasksON = array_filter($webtasksON, function ($webtask) use ($selectedAvancement) {
+                switch ($selectedAvancement) {
+                    case 'nonPriseEnCompte':
+                        return $webtask->getAvancementDeLaTache() === '0';
+                    case 'priseEnCompte':
+                        return $webtask->getAvancementDeLaTache() === '1';
+                    case 'terminee':
+                        return $webtask->getAvancementDeLaTache() === '2';
+                    case 'amelioration':
+                        return $webtask->getAvancementDeLaTache() === '3';
+                    case 'refusee':
+                        return $webtask->getAvancementDeLaTache() === '4';
+                    case 'validee':
+                        return $webtask->getAvancementDeLaTache() === '5';
+                    case 'stopClient':
+                        return $webtask->getAvancementDeLaTache() === '6';
+                    case 'goClient':
+                        return $webtask->getAvancementDeLaTache() === '7';
+                    default:
+                        return true; // Renvoie toutes les tâches si le filtre ne correspond à rien
+                }
+            });
+        }
+
         // Mapper les tags et l'avancement des tâches
         $webtasks = array_map(function($webtask) {
             $tagValue = $webtask->getTag();
             $mappedTag = $this->mapTag($tagValue);
             $webtask->setTag($mappedTag);
-
-            $avancementValue = $webtask->getAvancementDeLaTache();
-            $mappedAvancement = $this->mapAvancementDeLaTache($avancementValue);
 
             $idVersion = $webtask->getIdversion();
             if ($idVersion === null) {
@@ -110,9 +141,13 @@ class HomeAdminController extends AbstractController
                 $webtask->versionLibelle = $this->versionService->getLibelleById($idVersion);
             }
 
-            $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
+            $webtask->mappedTag = $this->mapTag($webtask->getTag());
             $webtask->mappedAvancement = $this->mapAvancementDeLaTache($webtask->getAvancementdelatache());
+            $webtask->setDescription($this->textTransformer->transformCrToNewLine($webtask->getDescription()));
 
+            $avancementValue = $webtask->getAvancementDeLaTache();
+            $mappedAvancement = $this->mapAvancementDeLaTache($avancementValue)['label'];
+            $webtask->setAvancementDeLaTache($mappedAvancement);
 
             return $webtask;
         }, $webtasks);

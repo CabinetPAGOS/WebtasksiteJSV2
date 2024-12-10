@@ -130,7 +130,6 @@ class ReponseController extends AbstractController
             // Mettre à jour la tâche avec le statut de documents attachés
             $newTache->setDocumentsAttaches($hasDocuments ? '1' : '0');  // Stockage en tant que chaîne
 
-
             for ($i = 1; $i <= 3; $i++) {
                 $fileLink = $request->request->get("fileLink{$i}", "");   // lien de fichier
                 $fileTitle = $request->request->get("fileTitle{$i}", ""); // titre de fichier
@@ -150,7 +149,6 @@ class ReponseController extends AbstractController
 
             $areDocumentsAttaches = !empty($documentsAttaches[0]) || !empty($documentsAttaches[1]) || !empty($documentsAttaches[2]);
             $newTache->setDocumentsAttaches($areDocumentsAttaches);
-
 
             // Convertir la date en chaîne
             $dueDate = $request->request->get('due_date');
@@ -176,7 +174,22 @@ class ReponseController extends AbstractController
             $newTache->setPiloteid($tache->getPiloteid());
             $newTache->setEstimationTemps($tache->getEstimationTemps());
             // Date de fin demandée enregistrée dans le code jute au dessus
-            $newTache->setAvancementDeLaTache($tache->getAvancementDeLaTache());
+
+            // Mise à jour de l'avancement
+            if ($tache->getAvancementDeLaTache() == 6) {
+                $newTache->setAvancementDeLaTache(7);
+            } else {
+                $newTache->setAvancementDeLaTache($tache->getAvancementDeLaTache());
+            }
+
+            if ($tache->getAvancementDeLaTache() == 5) {
+                $newTache->setAvancementDeLaTache(4);
+            } else {
+                $newTache->setAvancementDeLaTache($tache->getAvancementDeLaTache());
+            }
+
+
+
             $newTache->setDemandeDeRecettage($tache->getDemandeDeRecettage());
             $newTache->setCommentaireWebtaskClient($request->request->get('nouveau_commentaire'));
             // Pas de commentaire interne PAGOS

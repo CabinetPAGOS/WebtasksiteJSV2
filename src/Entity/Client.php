@@ -15,21 +15,30 @@ class Client
     #[ORM\Column(length: 50)]
     private ?string $id = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $code = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $raison_sociale = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_drive_webtask = null;
-
 
     #[ORM\Column(nullable: true)]
     private ?bool $webtaskOuvertureContact = null;
 
     #[ORM\Column(type: Types::BLOB, nullable: true)]
     private $logo = null;
+
+    // Champs responsables et pilote
+    #[ORM\ManyToOne(targetEntity: Responsable::class)]
+    #[ORM\JoinColumn(name: "responsable_id", referencedColumnName: "id", nullable: true)]
+    private ?Responsable $responsable = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "pilote_id", referencedColumnName: "id", nullable: true)]
+    private ?User $pilote = null;
+    
 
     // Relation OneToMany vers Forum (résumés de réunion)
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Forum::class, cascade: ['persist', 'remove'])]
@@ -52,7 +61,30 @@ class Client
         $this->webtasks = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->forums = new ArrayCollection(); // Initialisation de la collection forums
+    }
 
+    // Getter et Setter pour responsable
+    public function getResponsable(): ?Responsable
+    {
+        return $this->responsable;
+    }
+
+    public function setResponsable(?Responsable $responsable): static
+    {
+        $this->responsable = $responsable;
+        return $this;
+    }
+
+    // Getter et Setter pour pilote
+    public function getPilote(): ?string
+    {
+        return $this->pilote;
+    }
+
+    public function setPilote(?string $pilote): static
+    {
+        $this->pilote = $pilote;
+        return $this;
     }
 
     // Gestion de la relation avec Forum
@@ -64,7 +96,6 @@ class Client
         return $this->forums;
     }
 
-
     public function addForum(Forum $forum): self
     {
         if (!$this->forums->contains($forum)) {
@@ -74,7 +105,7 @@ class Client
 
         return $this;
     }
-    
+
     public function removeForum(Forum $forum): self
     {
         if ($this->forums->removeElement($forum)) {
@@ -86,7 +117,6 @@ class Client
         return $this;
     }
 
-
     public function getId(): ?string
     {
         return $this->id;
@@ -95,7 +125,6 @@ class Client
     public function setId(int $id): self
     {
         $this->id = $id;
-
         return $this;
     }
 
@@ -107,7 +136,6 @@ class Client
     public function setCode(string $code): static
     {
         $this->code = $code;
-
         return $this;
     }
 
@@ -119,10 +147,8 @@ class Client
     public function setRaisonSociale(string $raison_sociale): static
     {
         $this->raison_sociale = $raison_sociale;
-
         return $this;
     }
-
 
     public function getGoogleDriveWebtask(): ?string
     {
@@ -132,24 +158,17 @@ class Client
     public function setGoogleDriveWebtask(string $google_drive_webtask): static
     {
         $this->google_drive_webtask = $google_drive_webtask;
-
         return $this;
     }
 
-    
-    
-
-    
-
-    public function iswebtaskOuvertureContact(): ?bool
+    public function isWebtaskOuvertureContact(): ?bool
     {
         return $this->webtaskOuvertureContact;
     }
 
-    public function setwebtaskOuvertureContact(?bool $webtaskOuvertureContact): static
+    public function setWebtaskOuvertureContact(?bool $webtaskOuvertureContact): static
     {
         $this->webtaskOuvertureContact = $webtaskOuvertureContact;
-
         return $this;
     }
 
@@ -161,10 +180,10 @@ class Client
     public function setLogo($logo): static
     {
         $this->logo = $logo;
-
         return $this;
     }
 
+    
     /**
      * @return Collection<int, Webtask>
      */
@@ -224,5 +243,4 @@ class Client
 
         return $this;
     }
-
 }

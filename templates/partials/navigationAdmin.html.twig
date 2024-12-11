@@ -62,6 +62,11 @@
 										Créer un Client
 									</a>
 								</li>
+								<li>
+									<a class="dropdown-item {% if app.request.attributes.get('_route') == 'app_gestionclient' %}active{% endif %}" href="{{ path('app_gestionclient') }}">
+										Gérer les client
+									</a>
+								</li>
 							</div>
 
 							<div class="user-section">

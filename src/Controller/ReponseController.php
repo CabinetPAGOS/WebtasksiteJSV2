@@ -178,18 +178,13 @@ class ReponseController extends AbstractController
             // Mise à jour de l'avancement
             if ($tache->getAvancementDeLaTache() == 6) {
                 $newTache->setAvancementDeLaTache(7);
-            } else {
-                $newTache->setAvancementDeLaTache($tache->getAvancementDeLaTache());
-            }
-
-            if ($tache->getAvancementDeLaTache() == 5) {
+            } elseif ($tache->getAvancementDeLaTache() == 5) {
                 $newTache->setAvancementDeLaTache(4);
             } else {
+                // Si l'avancement est différent de 6 ou 5, garder la valeur actuelle
                 $newTache->setAvancementDeLaTache($tache->getAvancementDeLaTache());
             }
-
-
-
+            
             $newTache->setDemandeDeRecettage($tache->getDemandeDeRecettage());
             $newTache->setCommentaireWebtaskClient($request->request->get('nouveau_commentaire'));
             // Pas de commentaire interne PAGOS

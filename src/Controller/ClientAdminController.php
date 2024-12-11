@@ -1,173 +1,201 @@
 <?php
-// src/Controller/ClientController.php
+    // src/Controller/ClientController.php
+    namespace App\Controller;
 
-namespace App\Controller;
-
-use App\Repository\WebtaskRepository;
-use App\Entity\Notification;
-use App\Repository\NotificationRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Client;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use App\Repository\ClientRepository;
-
-
-class ClientAdminController extends AbstractController
-{
-    private $webTaskRepository;
-    private $entityManager;
-    private $notificationRepository;
-    private $clientRepository;
+    use App\Repository\WebtaskRepository;
+    use App\Entity\Notification;
+    use App\Repository\NotificationRepository;
+    use Doctrine\ORM\EntityManagerInterface;
+    use App\Entity\Client;
+    use App\Repository\UserRepository; // Add the UserRepository to query users
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+    use Symfony\Component\HttpFoundation\Request;
+    use Symfony\Component\HttpFoundation\Response;
+    use Symfony\Component\Routing\Annotation\Route;
+    use Symfony\Component\Form\Extension\Core\Type\TextType;
+    use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+    use Symfony\Component\Form\Extension\Core\Type\FileType;
+    use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+    use App\Repository\ClientRepository;
+    use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+    use App\Entity\Responsable;  // Importation correcte de la classe Responsable
 
 
-    public function __construct(
-        WebtaskRepository $webTaskRepository,
-        EntityManagerInterface $entityManager,
-        NotificationRepository $notificationRepository,
-        ClientRepository $clientRepository
 
-    ) {
-        $this->webTaskRepository = $webTaskRepository;
-        $this->entityManager = $entityManager;
-        $this->notificationRepository = $notificationRepository;
-        $this->clientRepository = $clientRepository;
-    }
-
-    #[Route('/admin/client/create', name: 'app_createclientadmin')]
-    public function create(Request $request, EntityManagerInterface $entityManager, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
+    class ClientAdminController extends AbstractController
     {
-        // Récupérer l'utilisateur connecté
-        $user = $this->getUser();
+        private $webTaskRepository;
+        private $entityManager;
+        private $notificationRepository;
+        private $clientRepository;
 
-        // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
+
+
+        public function __construct(
+            WebtaskRepository $webTaskRepository,
+            EntityManagerInterface $entityManager,
+            NotificationRepository $notificationRepository,
+            ClientRepository $clientRepository
+
+        ) {
+            $this->webTaskRepository = $webTaskRepository;
+            $this->entityManager = $entityManager;
+            $this->notificationRepository = $notificationRepository;
+            $this->clientRepository = $clientRepository;
         }
 
-        // Récupérer l'ID du client associé à l'utilisateur connecté
-        $idclient = $user->getIdclient();
+        #[Route('/admin/client/create', name: 'app_createclientadmin')]
+        public function create(Request $request, EntityManagerInterface $entityManager, WebtaskRepository $webtaskRepository, NotificationRepository $notificationRepository): Response
+        {
+            // Récupérer l'utilisateur connecté
+            $user = $this->getUser();
+            $responsables = $entityManager->getRepository(Responsable::class)->findAll();
 
-        // Vérifier si un client est associé à l'utilisateur
-        if (!$idclient) {
-            throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
-        }
 
-        // Récupérer le client à partir de l'ID
-        $client = $this->clientRepository->find($idclient);
-
-        if (!$client) {
-            throw $this->createNotFoundException('Client non trouvé');
-        }
-
-        // Récupérer le logo du client
-        $logo = null;
-        if ($client->getLogo()) {
-            $logo = base64_encode(stream_get_contents($client->getLogo()));
-        }
-
-        // Récupérer les Webtasks associées à cet ID client
-        $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
-
-        $client = new Client();
-
-        // Créer le formulaire
-        $form = $this->createFormBuilder($client)
-            ->add('id', TextType::class, [
-                'label' => 'Identifiant Interne SYLOB :',
-                'required' => true,
-                'mapped' => false, // Exclure de l'entité pour la persistance
-            ])
-            ->add('code', TextType::class, [
-                'label' => 'Code du client :',
-                'required' => false,
-            ])
-            ->add('raison_sociale', TextType::class, [
-                'label' => 'Raison Sociale :',
-                'required' => false,
-            ])
-            ->add('google_drive_webtask', TextType::class, [
-                'label' => 'Lien Google Drive Webtask :',
-                'required' => false,
-            ])
-            ->add('webtaskOuvertureContact', CheckboxType::class, [
-                'label' => 'WebTask Ouverture Client :',
-                'required' => false,
-            ])
-            ->add('logo', FileType::class, [
-                'label' => 'Logo :',
-                'required' => false,
-            ])
-            ->getForm();
-
-        // Traitement du formulaire
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer l'id du formulaire
-            $id = $form->get('id')->getData();
-
-            // Assigner l'id à l'entité Client
-            $client->setId($id);
-
-            // Vérifier si l'id est renseigné
-            if (empty($client->getId())) {
-                $this->addFlash('error', 'L\'identifiant doit être renseigné.');
-                return $this->render('Admin/createclient.html.twig', [
-                    'form' => $form->createView(),
-                ]);
+            // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+            if (!$user) {
+                return $this->redirectToRoute('app_login');
             }
 
-            // Vérifier si un client avec cet ID existe déjà
-            if ($entityManager->getRepository(Client::class)->find($client->getId())) {
-                $this->addFlash('error', 'Un client avec cet identifiant existe déjà.');
-                return $this->render('Admin/createclient.html.twig', [
-                    'form' => $form->createView(),
-                ]);
+            // Récupérer l'ID du client associé à l'utilisateur connecté
+            $idclient = $user->getIdclient();
+
+            // Vérifier si un client est associé à l'utilisateur
+            if (!$idclient) {
+                throw $this->createNotFoundException('Aucun client associé à cet utilisateur.');
             }
 
-            // Enregistrer le client en base de données
-            $entityManager->persist($client);
-            $entityManager->flush();
+            // Récupérer le client à partir de l'ID
+            $client = $this->clientRepository->find($idclient);
 
-            // Rediriger vers une page ou afficher un message de succès
-            $this->addFlash('success', 'Le client a été créé avec succès.');
-            return $this->redirectToRoute('app_homeadmin');
-        }
-
-        // Récupérer les notifications visibles de l'utilisateur connecté
-        $notifications = $notificationRepository->findBy([
-            'user' => $user->getId(),
-            'visible' => true
-        ]);
-
-        // Créer un tableau pour lier codeWebtask à id
-        $idWebtaskMap = [];
-        foreach ($notifications as $notification) {
-            $idWebtask = $this->webTaskRepository->findIdByCodeWebtask($notification->getCodeWebtask());
-            if ($idWebtask !== null) {
-                $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
+            if (!$client) {
+                throw $this->createNotFoundException('Client non trouvé');
             }
+
+            // Récupérer le logo du client
+            $logo = null;
+            if ($client->getLogo()) {
+                $logo = base64_encode(stream_get_contents($client->getLogo()));
+            }
+
+            // Récupérer les Webtasks associées à cet ID client
+            $webtasks = $this->webTaskRepository->findBy(['idclient' => $idclient]);
+
+            // Récupérer tous les responsables de la base de données
+
+            $client = new Client();
+
+            // Créer le formulaire
+            $form = $this->createFormBuilder($client)
+                ->add('id', TextType::class, [
+                    'label' => 'Identifiant Interne SYLOB :',
+                    'required' => true,
+                    'mapped' => false, // Exclure de l'entité pour la persistance
+                ])
+                ->add('code', TextType::class, [
+                    'label' => 'Code du client :',
+                    'required' => false,
+                ])
+                ->add('raison_sociale', TextType::class, [
+                    'label' => 'Raison Sociale :',
+                    'required' => false,
+                ])
+                ->add('google_drive_webtask', TextType::class, [
+                    'label' => 'Lien Google Drive Webtask :',
+                    'required' => false,
+                ])
+                ->add('webtaskOuvertureContact', CheckboxType::class, [
+                    'label' => 'WebTask Ouverture Client :',
+                    'required' => false,
+                ])
+                ->add('logo', FileType::class, [
+                    'label' => 'Logo :',
+                    'required' => false,
+                ])
+                ->add('responsable', ChoiceType::class, [
+                    'label' => 'Responsable :',
+                    'required' => false,
+                    'choices' => array_reduce($responsables, function ($choices, $responsable) {
+                        $choices[$responsable->getPrenom() . ' ' . $responsable->getNom() . ' (ID: ' . $responsable->getId() . ')'] = $responsable->getId();
+                        return $choices;
+                    }, []),
+                    'choice_value' => 'id',  // Utiliser l'ID du responsable comme valeur sélectionnée
+                ])
+                
+                ->add('pilote', TextType::class, [
+                    'label' => 'Pilote :',
+                    'required' => false,
+                ])
+
+                ->getForm();
+
+            // Traitement du formulaire
+            $form->handleRequest($request);
+
+            
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                // Récupérer l'ID du responsable sélectionné
+                $responsableId = $form->get('responsable')->getData();
+                if ($responsableId) {
+                    // Récupérer le responsable depuis la base de données
+                    $responsable = $entityManager->getRepository(Responsable::class)->find($responsableId);
+                    $client->setResponsable($responsable);
+                }
+            
+                // Vérifier si l'id est renseigné
+                if (empty($client->getId())) {
+                    $this->addFlash('error', 'L\'identifiant doit être renseigné.');
+                    return $this->render('Admin/createclient.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+            
+                // Vérifier si un client avec cet ID existe déjà
+                if ($entityManager->getRepository(Client::class)->find($client->getId())) {
+                    $this->addFlash('error', 'Un client avec cet identifiant existe déjà.');
+                    return $this->render('Admin/createclient.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+            
+                // Enregistrer le client en base de données
+                $entityManager->persist($client);
+                $entityManager->flush();
+            
+                // Rediriger vers une page ou afficher un message de succès
+                $this->addFlash('success', 'Le client a été créé avec succès.');
+                return $this->redirectToRoute('app_homeadmin');
+            }
+            
+
+            // Récupérer les notifications visibles de l'utilisateur connecté
+            $notifications = $notificationRepository->findBy([
+                'user' => $user->getId(),
+                'visible' => true
+            ]);
+
+            // Créer un tableau pour lier codeWebtask à id
+            $idWebtaskMap = [];
+            foreach ($notifications as $notification) {
+                $idWebtask = $this->webTaskRepository->findIdByCodeWebtask($notification->getCodeWebtask());
+                if ($idWebtask !== null) {
+                    $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
+                }
+            }
+
+            // Afficher le formulaire
+            return $this->render('Admin/createclient.html.twig', [
+                'form' => $form->createView(),
+                'logo' => $logo,
+                'notifications' => $notifications,
+                'idWebtaskMap' => $idWebtaskMap,
+                'client' => $client,
+                'logo' => $logo,
+
+
+            ]);
         }
-
-        // Afficher le formulaire
-        return $this->render('Admin/createclient.html.twig', [
-            'form' => $form->createView(),
-            'logo' => $logo,
-            'notifications' => $notifications,
-            'idWebtaskMap' => $idWebtaskMap,
-            'client' => $client,
-            'logo' => $logo,
-
-
-        ]);
-    }
 
     #[Route('/notifications', name: 'get_notifications', methods: ['GET'])]
     public function getNotifications(): JsonResponse

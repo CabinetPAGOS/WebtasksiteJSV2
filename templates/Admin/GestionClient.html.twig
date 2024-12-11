@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Clients - ADMIN{% endblock %}
+
+{% block head %}
+    <!-- CSS -->
+    <link href="{{ asset('./assets/css/gestionClientAdmin.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block body %}
+    {% include('/partials/navigationAdmin.html.twig') %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="user-list-container">
+        <h1 class="user-list-title">LISTE DES CLIENTS</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Raison Sociale</th>
+                    <th scope="col">Actions</th>
+                    <th scope="col">ON/OFF</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                    <tr>
+                        <td>{{ client.raisonsociale }}</td>
+                        <td>
+                            <a class="btn btn-primary" href="{{ path('app_edit_client', {'id': client.id}) }}">Modifier</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary">ON/OFF</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- JS de Bootstrap et dépendances -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="{{ asset('./assets/js/gestionUserAdmin.js') }}"></script>
+
+    <!-- GESTION DE LA MAINTENANCE -->
+    <script type="text/javascript">
+        document.getElementById('toggle-maintenance').onsubmit = function (event) {
+            event.preventDefault();
+
+            fetch('{{ path('toggle_maintenance') }}', {method: 'POST'}).then(response => response.json()).then(data => {
+                if (data.maintenance) {
+                    alert('Maintenance activée');
+                } else {
+                    alert('Maintenance désactivée');
+                }
+            });
+        };
+
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}

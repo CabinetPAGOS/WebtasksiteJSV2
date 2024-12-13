@@ -94,31 +94,189 @@ h1 {
 
 .avancement-dropdown .custom-filter-button {
     margin-top: 30px;
-    margin-left : 40px;
-    padding: 15px;
+    margin-left: 40px;
+    padding: 15px 20px;
     font-size: 16px;
-    border: 2px solid #000;
+    border: 2px solid #000; /* Bordure noire */
     border-radius: 10px;
     background-color: #fff;
+    color: #333; /* Texte en noir */
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.avancement-dropdown .custom-filter-button:hover {
+    background-color: #f1f1f1; /* Couleur de fond claire au survol */
+    color: #333; /* Reste noir */
+    border-color: #000; /* Bordure noire au survol */
+}
+
+.custom-dropdown .custom-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    width: 250px;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+}
+
+.custom-dropdown .custom-dropdown-menu.show {
+    display: block;
+}
+
+.custom-dropdown .custom-dropdown-menu li {
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.custom-dropdown .custom-dropdown-menu li:hover {
+    background-color: #f1f1f1; /* Fond clair au survol */
+}
+
+.custom-dropdown .avancement-checkbox {
+    width: 25px; /* Augmente la taille des cases à cocher */
+    height: 25px; /* Augmente la taille des cases à cocher */
+    margin-right: 10px;
+    border: 2px solid #000; /* Bordure noire autour des cases */
+    border-radius: 5px; /* Coins arrondis pour les cases */
+}
+
+.custom-dropdown .avancement-checkbox + label {
+    cursor: pointer;
+    font-size: 14px;
+    color: #333; /* Texte noir */
+    display: inline-block;
+    padding-left: 5px;
+}
+
+.custom-dropdown button.btn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #f1f1f1; /* Fond clair */
+    color: #333; /* Texte noir */
+    border: 2px solid #333; /* Bordure noire */
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.custom-dropdown button.btn:hover {
+    background-color: #e0e0e0; /* Fond plus foncé au survol */
+    color: #333;
+    border-color: #000; /* Bordure noire au survol */
+}
+
+.custom-dropdown button.btn:active {
+    background-color: #ccc; /* Fond encore plus foncé au clic */
+}
+
+.custom-dropdown .custom-filter-button:focus,
+.custom-dropdown button.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5); /* Contour sombre au focus */
 }
 
 /* Dropdown pilote personnalisé */
-.custom-dropdown .pilote-dropdown {
-    position: relative;
-}
-
 .pilote-dropdown .custom-filter-button {
     margin-top: 30px;
-    margin-left : 20px;
-    padding: 15px;
+    margin-left: 40px;
+    padding: 15px 20px;
     font-size: 16px;
-    border: 2px solid #000;
+    border: 2px solid #000; /* Bordure noire */
     border-radius: 10px;
     background-color: #fff;
+    color: #333; /* Texte en noir */
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.pilote-dropdown .custom-filter-button:hover {
+    background-color: #f1f1f1; /* Couleur de fond claire au survol */
+    color: #333; /* Reste noir */
+    border-color: #000; /* Bordure noire au survol */
+}
+
+.pilote-dropdown .custom-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    width: 250px;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+}
+
+.pilote-dropdown .custom-dropdown-menu.show {
+    display: block;
+}
+
+.pilote-dropdown .custom-dropdown-menu li {
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pilote-dropdown .custom-dropdown-menu li:hover {
+    background-color: #f1f1f1; /* Fond clair au survol */
+}
+
+.pilote-dropdown .pilote-checkbox {
+    width: 25px; /* Augmente la taille des cases à cocher */
+    height: 25px; /* Augmente la taille des cases à cocher */
+    margin-right: 10px;
+    border: 2px solid #000; /* Bordure noire autour des cases */
+    border-radius: 5px; /* Coins arrondis pour les cases */
+}
+
+.pilote-dropdown .pilote-checkbox + label {
+    cursor: pointer;
+    font-size: 14px;
+    color: #333; /* Texte noir */
+    display: inline-block;
+    padding-left: 5px;
+}
+
+.pilote-dropdown button.btn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #f1f1f1; /* Fond clair */
+    color: #333; /* Texte noir */
+    border: 2px solid #333; /* Bordure noire */
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.pilote-dropdown button.btn:hover {
+    background-color: #e0e0e0; /* Fond plus foncé au survol */
+    color: #333;
+    border-color: #000; /* Bordure noire au survol */
+}
+
+.pilote-dropdown button.btn:active {
+    background-color: #ccc; /* Fond encore plus foncé au clic */
+}
+
+.pilote-dropdown .custom-filter-button:focus,
+.pilote-dropdown button.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5); /* Contour sombre au focus */
 }
 
 /* Customisation des listes déroulantes */
@@ -232,4 +390,33 @@ h1 {
 .center-button:focus {
     outline: none; /* Enlève le contour de focus */
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Ombre de focus */
+}
+
+.hidden {
+    display: none;
+}
+
+/* GESTION FILTRES ACTIFS/INACTIFS */
+.active-filters {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.active-filters span {
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.active-filters .filter-item {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 3px 6px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 3px;
+    font-size: 12px;
 }

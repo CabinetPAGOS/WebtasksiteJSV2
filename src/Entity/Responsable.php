@@ -106,6 +106,4 @@ class Responsable
 
         return $this;
     }
-
-    
 }

@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un client - ADMIN
-{% endblock %}
+{% block title %}Créer un client - ADMIN{% endblock %}
 
 {% block head %}
 	<!-- CSS -->
@@ -46,9 +45,9 @@
 			</div>
 
 			<div class="form-group">
-				{{ form_label(form.raison_sociale, null, {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.raison_sociale, {'attr': {'class': 'form-control'}}) }}
-				{{ form_errors(form.raison_sociale) }}
+				{{ form_label(form.raisonsociale, null, {'label_attr': {'class': 'form-label'}}) }}
+				{{ form_widget(form.raisonsociale, {'attr': {'class': 'form-control'}}) }}
+				{{ form_errors(form.raisonsociale) }}
 			</div>
 
 			<div class="form-group">
@@ -64,23 +63,10 @@
 			</div>
 
 			<div class="form-group">
-				{{ form_label(form.logo, null, {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.logo, {'attr': {'class': 'form-control'}}) }}
-				{{ form_errors(form.logo) }}
-			</div>
-
-			<div class="form-group">
 				{{ form_label(form.responsable, null, {'label_attr': {'class': 'form-label'}}) }}
 				{{ form_widget(form.responsable, {'attr': {'class': 'form-control'}}) }}
 				{{ form_errors(form.responsable) }}
 			</div>
-
-			<div class="form-group">
-				{{ form_label(form.pilote, null, {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.pilote, {'attr': {'class': 'form-control'}}) }}
-				{{ form_errors(form.pilote) }}
-			</div>
-
 
 			<div class="btn-group" role="group">
 				<button type="submit" class="btn btn-secondary" id="submitButton">

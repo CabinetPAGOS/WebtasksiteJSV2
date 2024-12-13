@@ -100,7 +100,8 @@ class Webtask
     #[ORM\ManyToOne(inversedBy: 'demandeur')]
     private ?User $iddemandeur = null;
 
-    #[ORM\ManyToOne(inversedBy: 'pilote')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'pilote')]
+    #[ORM\JoinColumn(name: 'piloteid_id', referencedColumnName: 'id')]
     private ?User $Piloteid = null;
 
     #[ORM\Column(length: 255, nullable: true)]

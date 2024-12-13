@@ -47,18 +47,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', nullable: true)]
     private ?bool $depart_entreprise = null;
 
-    /**
-     * @var Collection<int, Webtask>
-     */
-    #[ORM\OneToMany(targetEntity: Webtask::class, mappedBy: 'ledemandeur')]
-    private Collection $webtasks;
-
-    /**
-     * @var Collection<int, Webtask>
-     */
-    #[ORM\OneToMany(targetEntity: Webtask::class, mappedBy: 'Piloteid')]
-    private Collection $webtaskpilote;
-
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Client $idclient = null;
 

@@ -128,7 +128,7 @@ class TachesAdminController extends AbstractController
         }
 
         // Appliquer le filtre par statut d'avancement si spécifié
-        if ($selectedAvancement !== 'all') {
+        if ($selectedAvancement !== 'all' && $request->isMethod('GET')) {
             $webtasksON = array_filter($webtasksON, function ($webtask) use ($selectedAvancement) {
                 switch ($selectedAvancement) {
                     case 'nonPriseEnCompte':
@@ -204,7 +204,6 @@ class TachesAdminController extends AbstractController
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
             'client' => $client,
-
         ]);
     }
 

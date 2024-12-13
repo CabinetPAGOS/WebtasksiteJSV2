@@ -72,100 +72,82 @@
 
 			<div class="custom-rectangle-statistic">
 				<div class="icon-grid">
-					<div
-						class="icon-container">
+					<div class="icon-container">
 						<!-- Redirection pour NON PRISE EN COMPTE -->
-						<a href="{{ path('app_taches', {'filter': 'nonPriseEnCompte'}) }}">
-							<div class="black-block" style="position: relative;">
-								<i class="fas fa-traffic-light iconeTheme" style="color: #FF0000;"></i>
-								<div class="light-circle-npc"></div>
-								<div class="statistic-value">
-									{{ nonPrisesEnCompte }}
-								</div>
+						<div class="black-block" style="position: relative;">
+							<i class="fas fa-traffic-light iconeTheme" style="color: #FF0000;"></i>
+							<div class="light-circle-npc"></div>
+							<div class="statistic-value">
+								{{ nonPrisesEnCompte }}
 							</div>
-						</a>
+						</div>
 						<div class="status-text">
 							<h5 style="color: black; font-weight: bold;">NON PRISE EN COMPTE</h5>
 						</div>
 					</div>
 
-					<div
-						class="icon-container">
+					<div class="icon-container">
 						<!-- Redirection pour STOP CLIENT -->
-						<a href="{{ path('app_taches', {'filter': 'stopClient'}) }}">
-							<div class="green-block" style="position: relative;">
-								<i class="fa-regular fa-face-frown iconeTheme" style="color: #FF0000;"></i>
-								<div class="statistic-value">
-									{{ stopClient }}
-								</div>
+						<div class="green-block" style="position: relative;">
+							<i class="fa-regular fa-face-frown iconeTheme" style="color: #FF0000;"></i>
+							<div class="statistic-value">
+								{{ stopClient }}
 							</div>
-						</a>
+						</div>
 						<div class="status-text">
 							<h5 style="color: black; font-weight: bold;">STOP CLIENT</h5>
 						</div>
 					</div>
 
-					<div
-						class="icon-container">
+					<div class="icon-container">
 						<!-- Redirection pour PRISE EN COMPTE -->
-						<a href="{{ path('app_taches', {'filter': 'priseEnCompte'}) }}">
-							<div class="black-block" style="position: relative;">
-								<i class="fas fa-traffic-light iconeTheme" style="color: #FFA500;"></i>
-								<div class="light-circle-pc"></div>
-								<div class="statistic-value">
-									{{ totalPriseEnCompteEtAmelioration  }}
-								</div>
+						<div class="black-block" style="position: relative;">
+							<i class="fas fa-traffic-light iconeTheme" style="color: #FFA500;"></i>
+							<div class="light-circle-pc"></div>
+							<div class="statistic-value">
+								{{ totalPriseEnCompteEtAmelioration  }}
 							</div>
-						</a>
+						</div>
 						<div class="status-text">
 							<h5 style="color: black; font-weight: bold;">PRISE EN COMPTE</h5>
 						</div>
 					</div>
 
-					<div
-						class="icon-container">
+					<div class="icon-container">
 						<!-- Redirection pour REFUSÉE -->
-						<a href="{{ path('app_taches', {'filter': 'refusee'}) }}">
-							<div class="red-block" style="position: relative;">
-								<i class="fa-solid fa-ban iconeTheme" style="color: #FFFFFF;"></i>
-								<div class="statistic-value">
-									{{ refusee }}
-								</div>
+						<div class="red-block" style="position: relative;">
+							<i class="fa-solid fa-ban iconeTheme" style="color: #FFFFFF;"></i>
+							<div class="statistic-value">
+								{{ refusee }}
 							</div>
-						</a>
+						</div>
 						<div class="status-text">
 							<h5 style="color: black; font-weight: bold;">REFUSÉE</h5>
 						</div>
 					</div>
 
-					<div
-						class="icon-container">
+					<div class="icon-container">
 						<!-- Redirection pour TERMINÉE -->
-						<a href="{{ path('app_taches', {'filter': 'terminee'}) }}">
-							<div class="black-block" style="position: relative;">
-								<i class="fas fa-traffic-light iconeTheme" style="color: #008000;"></i>
-								<div class="light-circle-t"></div>
-								<div class="statistic-value">
-									{{ terminee }}
-								</div>
+						<div class="black-block" style="position: relative;">
+							<i class="fas fa-traffic-light iconeTheme" style="color: #008000;"></i>
+							<div class="light-circle-t"></div>
+							<div class="statistic-value">
+								{{ terminee }}
 							</div>
-						</a>
+						</div>
 						<div class="status-text">
 							<h5 style="color: black; font-weight: bold;">TERMINÉE</h5>
 						</div>
 					</div>
 
-					<div
-						class="icon-container">
+					<div class="icon-container">
 						<!-- Redirection pour VALIDÉE -->
-						<a href="{{ path('app_taches', {'filter': 'validee'}) }}">
-							<div class="black-block" style="position: relative;">
-								<i class="fa-solid fa-lock-open iconeTheme" style="color: #FFFFFF;"></i>
-								<div class="statistic-value">
-									{{ validee }}
-								</div>
+						<div class="black-block" style="position: relative;">
+							<i class="fa-solid fa-lock-open iconeTheme" style="color: #FFFFFF;"></i>
+							<div class="statistic-value">
+								{{ validee }}
 							</div>
-						</a>
+						</div>
 						<div class="status-text">
 							<h5 style="color: black; font-weight: bold;">VALIDÉE</h5>
 						</div>
@@ -176,44 +158,44 @@
 	</div>
 
 	{% if isPilote %}
-    <hr>
-    <div class="container-task">
-        <h1>
-            <b>MES TÂCHES</b>
-        </h1>
-        {% if webtasks is not empty %}
-            <div class="container-task" id="taskContainer">
-                {% for webtask in webtasks %}
-                    {% if webtask.etatdelawebtask == 'ON' and webtask.piloteid is not null and webtask.piloteid.id == app.user.id %}
-                        <div class="custom-task hidden" 
-                            data-code="{{ webtask.webtask }}" 
-                            data-titre="{{ webtask.titre }}" 
-                            data-avancement="{{ webtask.avancementdelatache }}" 
-                            data-pilote-id="{{ webtask.piloteid.id }}">
-                            <h2><b>{{ webtask.titre }}</b></h2>
-                            <ul>
-                                <li><b><u>WebTask :</u></b> {{ webtask.webtask }}</li>
-                                <li><b><u>Description :</u></b> {{ webtask.description|nl2br }}</li>    
-                                <li><b><u>Date de fin demandée :</u></b> {{ webtask.datefinDemandee }}</li>
-                            	<li><b><u>Avancement de la tâche :</u></b> <span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span></li>
-                                <li><b><u>Créateur :</u></b>  {{ (webtask.iddemandeur.prenom[:1] ~ '. ' ~ webtask.iddemandeur.nom)|upper }}</li>
-                                <li><b><u>Responsable :</u></b> {{ (webtask.responsable.prenom[:1] ~ '. ' ~ webtask.responsable.nom)|upper }}</li>
-                                <li><b><u>Pilote :</u></b> {{ (webtask.piloteid.prenom[:1] ~ '. ' ~ webtask.piloteid.nom)|upper }}</li>
-                                <li><b><u>Version :</u></b> {{ webtask.versionLibelle }}</li>
-                            </ul>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertaches', { 'id': webtask.code }) }}'">CONSULTER</button>
-                                {# <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitaches', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button> #}
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>Aucune tâche disponible.</p>
-        {% endif %}
-    </div>
-{% endif %}
+    	<hr>
+		<div class="container-task">
+			<h1>
+				<b>MES TÂCHES</b>
+			</h1>
+			{% if webtasks is not empty %}
+				<div class="container-task" id="taskContainer">
+					{% for webtask in webtasks %}
+						{% if webtask.etatdelawebtask == 'ON' and webtask.piloteid is not null and webtask.piloteid.id == app.user.id %}
+							<div class="custom-task hidden" 
+								data-code="{{ webtask.webtask }}" 
+								data-titre="{{ webtask.titre }}" 
+								data-avancement="{{ webtask.avancementdelatache }}" 
+								data-pilote-id="{{ webtask.piloteid.id }}">
+								<h2><b>{{ webtask.titre }}</b></h2>
+								<ul>
+									<li><b><u>WebTask :</u></b> {{ webtask.webtask }}</li>
+									<li><b><u>Description :</u></b> {{ webtask.description|nl2br }}</li>    
+									<li><b><u>Date de fin demandée :</u></b> {{ webtask.datefinDemandee }}</li>
+									<li><b><u>Avancement de la tâche :</u></b> <span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span></li>
+									<li><b><u>Créateur :</u></b>  {{ (webtask.iddemandeur.prenom[:1] ~ '. ' ~ webtask.iddemandeur.nom)|upper }}</li>
+									<li><b><u>Responsable :</u></b> {{ (webtask.responsable.prenom[:1] ~ '. ' ~ webtask.responsable.nom)|upper }}</li>
+									<li><b><u>Pilote :</u></b> {{ (webtask.piloteid.prenom[:1] ~ '. ' ~ webtask.piloteid.nom)|upper }}</li>
+									<li><b><u>Version :</u></b> {{ webtask.versionLibelle }}</li>
+								</ul>
+								<div class="btn-group" role="group">
+									<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertaches', { 'id': webtask.code }) }}'">CONSULTER</button>
+									{# <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitaches', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button> #}
+								</div>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% else %}
+				<p>Aucune tâche disponible.</p>
+			{% endif %}
+		</div>
+	{% endif %}
 
 
 	<hr>

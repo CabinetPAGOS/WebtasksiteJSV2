@@ -12,123 +12,69 @@
 	{% include('/partials/navigationClient.html.twig') %}
 
 	<div class="search-filter-container">
-		<div class="custom-search-bar">
-			<input type="text" class="custom-search-input" placeholder="Rechercher une WebTask 🔎" value="{{ query }}">
-		</div>
-		<div class="custom-dropdown avancement-dropdown">
-			<button class="custom-filter-button dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-				{{ selectedAvancement|default('-- Tous les avancements --') }}
-			</button>
-			<ul class="custom-dropdown-menu dropdown-menu" aria-labelledby="filterDropdown">
-				<li>
-					<input type="checkbox" id="avancementNonPriseEnCompte" name="filter[]" value="nonPriseEnCompte" {% if 'nonPriseEnCompte' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementNonPriseEnCompte">Non Prise en Compte</label>
-				</li>
-				<li>
-					<input type="checkbox" id="avancementPriseEnCompte" name="filter[]" value="priseEnCompte" {% if 'priseEnCompte' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementPriseEnCompte">Prise en Compte</label>
-				</li>
-				<li>
-					<input type="checkbox" id="avancementTerminee" name="filter[]" value="terminee" {% if 'terminee' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementTerminee">Terminée</label>
-				</li>
-				<li>
-					<input type="checkbox" id="avancementAmelioration" name="filter[]" value="amelioration" {% if 'amelioration' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementAmelioration">Amélioration</label>
-				</li>
-				<li>
-					<input type="checkbox" id="avancementRefusee" name="filter[]" value="refusee" {% if 'refusee' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementRefusee">Refusée</label>
-				</li>
-				<li>
-					<input type="checkbox" id="avancementValidee" name="filter[]" value="validee" {% if 'validee' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementValidee">Validée</label>
-				</li>
-				<li>
-					<input type="checkbox" id="avancementStopClient" name="filter[]" value="stopClient" {% if 'stopClient' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementStopClient">Stop Client</label>
-				</li>
-				<li>
-					<input type="checkbox" id="avancementGoClient" name="filter[]" value="goClient" {% if 'goClient' in selectedAvancement %} checked {% endif %}>
-					<label for="avancementGoClient">Go Client</label>
-				</li>
-			</ul>
-		</div>
+        <div class="custom-search-bar">
+            <input type="text" class="custom-search-input" placeholder="Rechercher une WebTask 🔎" value="{{ query }}">
+        </div>
 
+        <div class="custom-dropdown avancement-dropdown">
+            <button class="custom-filter-button dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Avancements
+            </button>
+            <ul class="custom-dropdown-menu dropdown-menu" aria-labelledby="filterDropdown">
+                <li><label><input type="checkbox" class="avancement-checkbox" value="all"> Tous les avancements</label></li>
+                <hr>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="0"> Non Prise en Compte</label></li>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="1"> Prise en Compte</label></li>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="2"> Terminée</label></li>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="3"> ❇️ Amélioration ❇️</label></li>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="4"> ⛔️ Refusée ⛔️</label></li>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="5"> ✅ Validée</label></li>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="6"> ❌ Stop Client ❌</label></li>
+                <li><label><input type="checkbox" class="avancement-checkbox" value="7"> 😃 Go Client 😃</label></li>
+            </ul>
+        </div>
 
-		<div class="custom-dropdown pilote-dropdown">
-			<button class="custom-filter-button dropdown-toggle" type="button" id="filterPiloteDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-				<span id="selectedPiloteText">-- Tous les pilotes --</span>
-			</button>
-			<ul class="custom-dropdown-menu dropdown-menu" aria-labelledby="filterPiloteDropdown">
-				<li>
-					<a class="custom-dropdown-item dropdown-item" href="" onclick="filterByPilote('')">
-						<b>-- Tous les pilotes --</b>
-					</a>
-				</li>
-				{% for piloteId, pilote in pilotes %}
-					<li>
-						<a class="custom-dropdown-item dropdown-item" style="text-transform: uppercase;" href="" onclick="filterByPilote('{{ piloteId }}', '{{ pilote.initiale }} {{ pilote.nom }}')">
-							{{ pilote.initiale }}
-							{{ pilote.nom }}
-						</a>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
+        <div class="custom-dropdown pilote-dropdown">
+            <button class="custom-filter-button dropdown-toggle" type="button" id="filterPiloteDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Pilotes
+            </button>
+            <ul class="custom-dropdown-menu dropdown-menu" aria-labelledby="filterPiloteDropdown">
+                {% for piloteId, pilote in pilotes %}
+                <li>
+                    <label>
+                        <input type="checkbox" class="pilote-checkbox" value="{{ piloteId }}">
+                        {{ pilote.initiale }} {{ pilote.nom }}
+                    </label>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div id="activeFilters" class="active-filters">
+        <span>Aucun filtre actif</span>
+    </div>
 
 	<div class="container-custom" id="taskContainer">
 		{% if webtasks is not empty %}
 			{% for webtask in webtasks %}
-				{% if webtask.etatdelawebtask == 'ON' and (webtask.avancementdelatache != '5' or selectedAvancement == 'validee') %}
-					<div class="custom-rectangle hidden" data-code="{{ webtask.webtask }}" data-titre="{{ webtask.titre }}" data-avancement="{{ webtask.avancementdelatache }}" data-pilote-id="{{ webtask.piloteid.id }}">
-						<h2>
-							<b>{{ webtask.titre }}</b>
-						</h2>
+				{% if webtask.etatdelawebtask == 'ON' %}
+					<div class="custom-rectangle {% if webtask.avancementdelatache == '5' %}hidden{% endif %}" 
+                        data-code="{{ webtask.webtask }}" 
+                        data-titre="{{ webtask.titre }}" 
+                        data-avancement="{{ webtask.avancementdelatache }}" 
+                        data-pilote="{{ webtask.piloteid.id }}">
+						<h2><b>{{ webtask.titre }}</b></h2>
 						<ul>
-							<li>
-								<b>
-									<u>WebTask :</u>
-								</b>
-								{{ webtask.webtask }}</li>
-							<li>
-								<b>
-									<u>Description :</u>
-								</b>
-								{{ webtask.description|nl2br }}</li>
-							<li>
-								<b>
-									<u>Date de fin demandée :</u>
-								</b>
-								{{ webtask.datefinDemandee }}</li>
-							<li>
-								<b>
-									<u>Avancement de la tâche :</u>
-								</b>
-								<span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span>
-							</li>
-							<li>
-								<b>
-									<u>Créateur :</u>
-								</b>
-								{{ (webtask.iddemandeur.prenom[:1] ~ '. ' ~ webtask.iddemandeur.nom)|upper }}</li>
-							<li>
-								<b>
-									<u>Responsable :</u>
-								</b>
-								{{ (webtask.responsable.prenom[:1] ~ '. ' ~ webtask.responsable.nom)|upper }}</li>
-							<li>
-								<b>
-									<u>Pilote :</u>
-								</b>
-								{{ (webtask.piloteid.prenom[:1] ~ '. ' ~ webtask.piloteid.nom)|upper }}</li>
-							<li>
-								<b>
-									<u>Version :</u>
-								</b>
-								{{ webtask.versionLibelle }}</li>
-						</ul>
+                            <li><b><u>WebTask :</u></b> {{ webtask.webtask }}</li>
+                            <li><b><u>Description :</u></b> {{ webtask.description|nl2br }}</li>
+                            <li><b><u>Date de fin demandée :</u></b> {{ webtask.datefinDemandee }}</li>
+                            <li><b><u>Avancement de la tâche :</u></b> <span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span></li>
+                            <li><b><u>Créateur :</u></b>  {{ (webtask.iddemandeur.prenom[:1] ~ '. ' ~ webtask.iddemandeur.nom)|upper }}</li>
+                            <li><b><u>Responsable :</u></b> {{ (webtask.responsable.prenom[:1] ~ '. ' ~ webtask.responsable.nom)|upper }}</li>
+                            <li><b><u>Pilote :</u></b> {{ (webtask.piloteid.prenom[:1] ~ '. ' ~ webtask.piloteid.nom)|upper }}</li>
+                            <li><b><u>Version :</u></b> {{ webtask.versionLibelle }}</li>
+                        </ul>
 						<div class="btn-group" role="group">
 							<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertaches', { 'id': webtask.code }) }}'">CONSULTER</button>
 							<!--<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitaches', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button>-->
@@ -164,5 +110,16 @@
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+        // Injecter les données des pilotes dans une variable JavaScript
+        const piloteData = {
+            {% for piloteId, pilote in pilotes %}
+                "{{ piloteId }}": {
+                    initiale: "{{ pilote.initiale }}",
+                    nom: "{{ pilote.nom }}"
+                },
+            {% endfor %}
+        };
+    </script>
 	<script src="{{ asset('./assets/js/tachesClient.js') }}"></script>
 {% endblock %}

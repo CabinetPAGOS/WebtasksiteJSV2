@@ -43,7 +43,7 @@ class HomeAdminController extends AbstractController
     #[Route('/admin/home', name: 'app_homeadmin')]
     public function homeadmin(WebtaskRepository $webtaskRepository, Request $request, NotificationRepository $notificationRepository): Response
     {
-        $selectedAvancement = $request->query->get('filter', 'all'); // Remplace `filter` par `selectedAvancement`
+        $selectedAvancement = $request->query->get('filter', 'all');
 
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();

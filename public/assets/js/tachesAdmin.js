@@ -1,27 +1,125 @@
-// GESTION DES FILTRES
+// GESTION BARRE DE RECHERCHE ET FILTRES
 $(document).ready(function () {
     const $tasks = $('.custom-rectangle');
     const $searchInput = $('.custom-search-input');
-    const $avancementButton = $('#filterDropdown'); // Bouton de filtre d'avancement
-    const $piloteButton = $('#filterPiloteDropdown'); // Bouton de filtre de pilote
-    const $selectedPiloteText = $('#selectedPiloteText'); // Texte du bouton de filtre pilote
+    const $activeFilters = $('#activeFilters');
 
-    // Variables pour conserver les filtres
-    let currentAvancement = getUrlParam('filter') || ''; // Filtre d'avancement
-    let currentPiloteId = getUrlParam('filterByPilote') || ''; // Filtre de pilote
-    let currentPiloteName = getUrlParam('piloteName') || '-- Tous les pilotes --'; // Nom du pilote
+    let currentAvancements = []; // Liste des filtres d'avancement
+    let currentPilotes = []; // Liste des filtres de pilotes
 
-    // Fonction pour récupérer les paramètres d'URL
-    function getUrlParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param) || ''; // Retourne la valeur du paramètre ou une chaîne vide
+    // Fonction pour appliquer les filtres de pilotes
+    window.applyPiloteFilters = function () {
+        currentPilotes = [];
+        $('.pilote-checkbox:checked').each(function () {
+            const value = $(this).val();
+            if (value) {
+                currentPilotes.push(value);
+            }
+        });
+
+        updateActiveFilters(); // Met à jour l'affichage des filtres actifs
+        const query = $searchInput.val().trim(); // Récupère la requête de recherche
+        filterTasks(query); // Applique les filtres
+    };
+
+    // Fonction pour appliquer les filtres d'avancement
+    window.applyAvancementFilters = function () {
+        currentAvancements = [];
+        let allAvancementsChecked = false;  // Si "Tous les avancements" est coché
+    
+        $('.avancement-checkbox:checked').each(function () {
+            const value = $(this).val();
+            if (value === 'all') {
+                allAvancementsChecked = true;  // Si "Tous les avancements" est coché
+            } else if (value) {
+                currentAvancements.push(value); // Ajouter les autres filtres d'avancement
+            }
+        });
+    
+        // Si "Tous les avancements" est coché, on ignore tous les autres filtres d'avancement
+        if (allAvancementsChecked) {
+            currentAvancements = ['0', '1', '2', '3', '4', '5', '6', '7'];
+        }
+    
+        // Met à jour l'affichage des filtres actifs
+        updateActiveFilters();
+    
+        // Récupère la requête de recherche
+        const query = $searchInput.val().trim();
+        filterTasks(query); // Applique les filtres
+    }; 
+
+    // Fonction pour mettre à jour l'affichage des filtres actifs
+    function updateActiveFilters() {
+        const filters = [];
+
+        if (currentAvancements.length > 0) {
+            const avancementLabels = currentAvancements.map((value) => {
+                switch (value) {
+                    case '0': return 'Non Prise en Compte';
+                    case '1': return 'Prise en Compte';
+                    case '2': return 'Terminée';
+                    case '3': return '❇️ Amélioration ❇️';
+                    case '4': return '⛔️ Refusée ⛔️';
+                    case '5': return '✅ Validée';
+                    case '6': return '❌ Stop Client ❌';
+                    case '7': return '😃 Go Client 😃';
+                    default: return 'Inconnu';
+                }
+            });
+            filters.push(`Avancements : ${avancementLabels.join(', ')}`);
+        }
+
+        if (currentPilotes.length > 0) {
+            const piloteLabels = currentPilotes.map(id => {
+                const pilote = piloteData[id];  // Accède aux données du pilote via l'ID
+                if (pilote) {
+                    return `${pilote.initiale} ${pilote.nom}`;  // Affiche l'initiale et le nom
+                }
+                return 'Pilote inconnu';  // Cas où le pilote est introuvable
+            }).filter(Boolean);  // Filtrer les valeurs vides (si l'objet pilote est introuvable)
+
+            filters.push(`Pilotes : ${piloteLabels.join(', ')}`);
+        }
+
+        $activeFilters.html(filters.length > 0 ? filters.map(f => `<span class="filter-item">${f}</span>`).join('') : '<span>Aucun filtre actif</span>');
     }
 
-    // Fonction pour afficher toutes les tâches
-    function showAllTasks() {
-        $tasks.removeClass('hidden');
-        updateTaskInfoText();
-    }
+    // Fonction pour filtrer les tâches
+    function filterTasks(query = '') {
+        const lowerCaseQuery = query.toLowerCase();
+    
+        $tasks.each(function () {
+            const $task = $(this);
+            const taskCode = ($task.data('code') || '').toString().toLowerCase();
+            const taskTitre = ($task.data('titre') || '').toString().toLowerCase();
+            const taskAvancement = ($task.data('avancement') || '0').toString();
+            const taskPilote = ($task.data('pilote') || '').toString();
+    
+            const isValidated = taskAvancement === '5'; // Vérifie si la tâche est validée
+            const matchesQuery = taskCode.includes(lowerCaseQuery) || taskTitre.includes(lowerCaseQuery);
+            const matchesAvancement = currentAvancements.length === 0 || currentAvancements.includes(taskAvancement);
+            const matchesPilote = currentPilotes.length === 0 || currentPilotes.includes(taskPilote);
+
+            // Si une recherche est active, afficher uniquement les résultats correspondant
+            if (query !== '') {
+                if (matchesQuery) {
+                    $task.removeClass('hidden');
+                } else {
+                    $task.addClass('hidden');
+                }
+            } else {
+                // Applique les filtres combinés
+                if (matchesAvancement && matchesPilote && (!isValidated || currentAvancements.includes('5'))) {
+                    $task.removeClass('hidden');
+                } else {
+                    $task.addClass('hidden');
+                }
+            }
+        });
+
+        updateTaskInfoText(); // Met à jour le texte d'information des tâches visibles
+    }    
 
     // Fonction pour mettre à jour le texte d'information
     function updateTaskInfoText() {
@@ -33,114 +131,70 @@ $(document).ready(function () {
         }
     }
 
-    // Fonction pour filtrer les tâches
-    function filterTasks(query = '') {
-        const lowerCaseQuery = query.toLowerCase();
+    // Lecture et application des filtres depuis l'URL au chargement
+    (function initializeFiltersFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filter = urlParams.get('filter');
 
-        $tasks.each(function () {
-            const $task = $(this);
-            const taskCode = ($task.data('code') || '').toString().toLowerCase();
-            const taskTitre = ($task.data('titre') || '').toString().toLowerCase();
-            const taskAvancement = $task.data('avancement') || '';
-            const taskPiloteId = $task.data('pilote-id') || '';
-
-            // Vérification des filtres
-            const matchesQuery = taskCode.includes(lowerCaseQuery) || taskTitre.includes(lowerCaseQuery);
-            const matchesAvancement = currentAvancement === '' || taskAvancement === currentAvancement;
-            const matchesPilote = currentPiloteId === '' || taskPiloteId === currentPiloteId;
-
-            // Affiche ou masque la tâche en fonction des filtres
-            if (matchesQuery && matchesAvancement && matchesPilote) {
-                $task.removeClass('hidden');
-            } else {
-                $task.addClass('hidden');
+        if (filter) {
+            switch (filter) {
+                case 'nonPriseEnCompte':
+                    $('.avancement-checkbox[value="0"]').prop('checked', true);
+                    break;
+                case 'priseEnCompte':
+                    $('.avancement-checkbox[value="1"]').prop('checked', true);
+                    break;
+                case 'terminee':
+                    $('.avancement-checkbox[value="2"]').prop('checked', true);
+                    break;
+                case 'amelioration':
+                    $('.avancement-checkbox[value="3"]').prop('checked', true);
+                    break;
+                case 'refusee':
+                    $('.avancement-checkbox[value="4"]').prop('checked', true);
+                    break;
+                case 'validee':
+                    $('.avancement-checkbox[value="5"]').prop('checked', true);
+                    break;
+                case 'stopClient':
+                    $('.avancement-checkbox[value="6"]').prop('checked', true);
+                    break;
+                case 'goClient':
+                    $('.avancement-checkbox[value="7"]').prop('checked', true);
+                    break;
             }
-        });
-
-        // Mise à jour du texte d'information
-        updateTaskInfoText();
-    }
-
-    // Fonction pour mettre à jour le texte du bouton d'avancement
-    function updateAvancementButtonText() {
-        const avancementText = currentAvancement ? getAvancementDisplayText(currentAvancement) : 'Filtrer par avancement';
-        $avancementButton.text(avancementText);
-    }
-
-    // Fonction pour mettre à jour le texte du bouton de filtre pilote
-    function updatePiloteButtonText() {
-        $selectedPiloteText.text(currentPiloteName || 'Filtrer par pilote');
-    }
-
-    // Fonction pour récupérer le texte d'affichage de l'avancement
-    function getAvancementDisplayText(avancement) {
-        switch (avancement) {
-            case 'nonPriseEnCompte': return 'Non Prise en Compte';
-            case 'priseEnCompte': return 'Prise en Compte';
-            case 'terminee': return 'Terminée';
-            case 'amelioration': return '❇️ Amélioration ❇️';
-            case 'refusee': return '⛔️ Refusée ⛔️';
-            case 'validee': return '✅ Validée';
-            case 'stopClient': return '❌ Stop Client ❌';
-            case 'goClient': return '😃 Go Client 😃';
-            default: return '-- Tous les avancements --';
-        }
-    }
-
-    // Affiche toutes les tâches au chargement de la page
-    showAllTasks();
-
-    // Met à jour les filtres et l'URL
-    function updateUrlAndFilter(piloteId, piloteName, avancement) {
-        const currentUrl = new URL(window.location.href);
-        if (piloteId) {
-            currentUrl.searchParams.set('filterByPilote', piloteId); // Met à jour le filtre de pilote
-            currentUrl.searchParams.set('piloteName', piloteName); // Met à jour le nom du pilote
-        } else {
-            currentUrl.searchParams.delete('filterByPilote'); // Supprime le filtre de pilote si aucun ID
-            currentUrl.searchParams.delete('piloteName'); // Supprime le nom du pilote
+            applyAvancementFilters();
         }
 
-        if (avancement) {
-            currentUrl.searchParams.set('filter', avancement); // Met à jour le filtre d'avancement
-        } else {
-            currentUrl.searchParams.delete('filter'); // Supprime le filtre d'avancement si aucune valeur
-        }
+        // Supprimer le paramètre de l'URL après application du filtre initial
+        const newURL = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, newURL);
+    })();
 
-        // Mise à jour de l'URL et des boutons
-        window.history.pushState({}, '', currentUrl); // Met à jour l'URL sans recharger la page
-        updateAvancementButtonText(); // Met à jour le texte du bouton d'avancement
-        updatePiloteButtonText(); // Met à jour le texte du bouton de filtre pilote
-    }
-
-    // Réinitialiser la recherche avec "Entrée"
-    $searchInput.on('keypress', function (e) {
-        if (e.which === 13) { // Appuie sur la touche Entrée
-            const query = $(this).val().trim();
-            filterTasks(query); // Appelle le filtrage en tenant compte des autres filtres
-        }
+    // Gestion des changements dans les cases à cocher
+    $('.avancement-checkbox').on('change', function () {
+        applyAvancementFilters();
     });
 
-    // Fonction pour filtrer par pilote
-    window.filterByPilote = function(piloteId, piloteName = '-- Tous les pilotes --') {
-        currentPiloteId = piloteId; // Met à jour le filtre de pilote
-        currentPiloteName = piloteName; // Met à jour le nom du pilote
-        const query = $searchInput.val().trim(); // Récupère la requête de recherche
-        updateUrlAndFilter(currentPiloteId, currentPiloteName, currentAvancement); // Met à jour l'URL
-        filterTasks(query); // Filtre les tâches avec le filtre de pilote
-    };
+    $('.pilote-checkbox').on('change', function () {
+        applyPiloteFilters();
+    });
 
-    // Fonction pour filtrer par avancement
-    window.filterByAvancement = function(avancement) {
-        currentAvancement = avancement; // Met à jour le filtre d'avancement
-        const query = $searchInput.val().trim(); // Récupère la requête de recherche
-        updateUrlAndFilter(currentPiloteId, currentPiloteName, currentAvancement); // Met à jour l'URL
-        filterTasks(query); // Filtre les tâches avec le filtre de pilote et d'avancement
-    };
+    // Écouteur pour la barre de recherche
+    $searchInput.on('input', function () {
+        const query = $(this).val().trim();
+        
+        // Réinitialiser les filtres lors de la recherche
+        currentAvancements = [];
+        currentPilotes = [];
+        updateActiveFilters(); // Mettre à jour l'affichage des filtres actifs (aucun filtre actif)
+        
+        filterTasks(query); // Applique les filtres de recherche sans les autres filtres
+    });
 
-    // Initialisation du texte des boutons
-    updateAvancementButtonText();
-    updatePiloteButtonText();
+    // Initialisation : Masque toutes les tâches validées au chargement
+    filterTasks();
+    updateActiveFilters(); // Initialisation des filtres actifs
 });
 
 

@@ -92,7 +92,6 @@ class TachesClientsAdminController extends AbstractController
                         'prenom' => $piloteId->getPrenom(),
                         'initiale' => strtoupper(mb_substr($prenom, 0, 1)) . '.', // Convertit l'initiale en majuscule
                         'nom' => strtoupper($nom) // Convertit le nom complet en majuscule
-
                     ];
                 }
             }

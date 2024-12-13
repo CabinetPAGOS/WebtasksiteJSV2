@@ -153,26 +153,20 @@ class CreerTachesController extends AbstractController
             $newTache->setLibelle($newLibelleEtWebtask);
             $newTache->setWebtask($newLibelleEtWebtask);
 
-            // Récupérer le responsable par ID
-            $responsableId = 'e4e0858e6cdaf9a4016ce33ebe5b008e'; // ID correct pour le responsable
-            $responsable = $entityManager->getRepository(Responsable::class)->find($responsableId);
-
+            // Récupérer le responsable depuis l'entité Client
+            $responsable = $client->getResponsable();
             if (!$responsable) {
-                // Gérer l'erreur si le responsable n'est pas trouvé
-                $this->addFlash('error', 'Responsable not found with ID: ' . $responsableId);
+                $this->addFlash('error', 'Le client n\'a pas de responsable défini.');
             } else {
-                $newTache->setResponsable($responsable); // Assignation du responsable
+                $newTache->setResponsable($responsable);
             }
 
-            // Récupérer le pilote par ID
-            $piloteId = 'e4e087a587fba4670187fbbfa23e0021'; // ID du pilote
-            $pilote = $entityManager->getRepository(User::class)->find($piloteId);
-
+            // Récupérer le pilote depuis l'entité Client
+            $pilote = $client->getPilote();
             if (!$pilote) {
-                // Gérer l'erreur si le pilote n'est pas trouvé
-                $this->addFlash('error', 'Pilote not found with ID: ' . $piloteId);
+                $this->addFlash('error', 'Le client n\'a pas de pilote défini.');
             } else {
-                $newTache->setPiloteid($pilote); // Assignation du pilote
+                $newTache->setPiloteid($pilote);  // Assignation de l'objet User
             }
 
             // Récupérer les liens de fichiers et titres depuis la requête

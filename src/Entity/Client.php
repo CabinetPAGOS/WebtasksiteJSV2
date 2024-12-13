@@ -76,12 +76,12 @@ class Client
     }
 
     // Getter et Setter pour pilote
-    public function getPilote(): ?string
+    public function getPilote(): ?User
     {
         return $this->pilote;
     }
 
-    public function setPilote(?string $pilote): static
+    public function setPilote(?User $pilote): static
     {
         $this->pilote = $pilote;
         return $this;
@@ -183,7 +183,6 @@ class Client
         return $this;
     }
 
-    
     /**
      * @return Collection<int, Webtask>
      */

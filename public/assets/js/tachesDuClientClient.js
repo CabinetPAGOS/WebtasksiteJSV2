@@ -131,45 +131,19 @@ $(document).ready(function () {
         }
     }
 
-    // Lecture et application des filtres depuis l'URL au chargement
-    (function initializeFiltersFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const filter = urlParams.get('filter');
-
-        if (filter) {
-            switch (filter) {
-                case 'nonPriseEnCompte':
-                    $('.avancement-checkbox[value="0"]').prop('checked', true);
-                    break;
-                case 'priseEnCompte':
-                    $('.avancement-checkbox[value="1"]').prop('checked', true);
-                    break;
-                case 'terminee':
-                    $('.avancement-checkbox[value="2"]').prop('checked', true);
-                    break;
-                case 'amelioration':
-                    $('.avancement-checkbox[value="3"]').prop('checked', true);
-                    break;
-                case 'refusee':
-                    $('.avancement-checkbox[value="4"]').prop('checked', true);
-                    break;
-                case 'validee':
-                    $('.avancement-checkbox[value="5"]').prop('checked', true);
-                    break;
-                case 'stopClient':
-                    $('.avancement-checkbox[value="6"]').prop('checked', true);
-                    break;
-                case 'goClient':
-                    $('.avancement-checkbox[value="7"]').prop('checked', true);
-                    break;
-            }
-            applyAvancementFilters();
-        }
-
-        // Supprimer le paramètre de l'URL après application du filtre initial
-        const newURL = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, document.title, newURL);
-    })();
+    (function initializeDefaultFilters() {
+        // Initialiser les filtres d'avancement par défaut
+        $('.avancement-checkbox[value="0"]').prop('checked', true);
+        $('.avancement-checkbox[value="1"]').prop('checked', true);
+        $('.avancement-checkbox[value="2"]').prop('checked', true);
+        $('.avancement-checkbox[value="3"]').prop('checked', true);
+        $('.avancement-checkbox[value="4"]').prop('checked', true);
+        $('.avancement-checkbox[value="6"]').prop('checked', true);
+        $('.avancement-checkbox[value="7"]').prop('checked', true);
+    
+        // Appliquer les filtres par défaut
+        applyAvancementFilters();
+    })();    
 
     // Gestion des changements dans les cases à cocher
     $('.avancement-checkbox').on('change', function () {
@@ -184,17 +158,25 @@ $(document).ready(function () {
     $searchInput.on('input', function () {
         const query = $(this).val().trim();
         
-        // Réinitialiser les filtres lors de la recherche
+        // Réinitialiser les filtres d'avancement et de pilotes
         currentAvancements = [];
         currentPilotes = [];
-        updateActiveFilters(); // Mettre à jour l'affichage des filtres actifs (aucun filtre actif)
         
-        filterTasks(query); // Applique les filtres de recherche sans les autres filtres
+        // Décoche toutes les cases à cocher de filtre
+        $('.avancement-checkbox').prop('checked', false);
+        $('.pilote-checkbox').prop('checked', false);
+
+        // Met à jour l'affichage des filtres actifs
+        updateActiveFilters(); 
+        
+        // Applique la recherche sans les autres filtres
+        filterTasks(query); 
     });
 
-    // Initialisation : Masque toutes les tâches validées au chargement
-    filterTasks();
-    updateActiveFilters(); // Initialisation des filtres actifs
+
+        // Initialisation : Masque toutes les tâches validées au chargement
+        filterTasks();
+        updateActiveFilters(); // Initialisation des filtres actifs
 });
 
 

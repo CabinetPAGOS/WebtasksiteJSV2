@@ -1,12 +1,3 @@
-/* Centrage du titre principal */
-.title {
-    text-align: center;
-    font-size: 2rem;
-    color: #000;
-    margin-bottom: 20px;
-    font-weight: bold;
-}
-
 /* Container pour les clients */
 .client-container {
     position: relative;
@@ -18,6 +9,15 @@
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Centrage du titre principal */
+.title {
+    text-align: center;
+    font-size: 2rem;
+    color: #000;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 /* Carte des clients */

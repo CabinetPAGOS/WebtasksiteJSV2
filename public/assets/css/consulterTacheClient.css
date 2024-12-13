@@ -191,6 +191,14 @@
 .text-sc { color: #ffffff; font-weight: bold; background-color: #C92093; }
 .text-gc { color: #000000; font-weight: bold; background-color: #00B050; }
 
+/* Style général pour la section des commentaires */
+.comments-section div {
+    width: 100%;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
 
 .comment-card {
     margin-bottom: 20px; /* Espace entre chaque bloc de commentaire */
@@ -215,46 +223,6 @@
 .task-info b {
     white-space: nowrap;
     font-size: 13px;
-}
-
-.separator {
-    border: 0;
-    border-top: 2px solid #000;
-    margin: 15px 0;
-}
-
-.comment-internal {
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-size: 14px;
-}
-
-.no-comments,
-.no-client-comment,
-.no-internal-comment {
-    color: #999;
-    font-style: italic;
-    font-size: 14px;
-}
-
-.comment-client b,
-.comment-internal b {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 8px;
-    display: inline-block;
-}
-
-.comment-card p {
-    margin: 0;
-}
-
-.no-comments,
-.no-client-comment,
-.no-internal-comment b {
-    font-weight: normal;
 }
 
 /* Conteneur principal pour les documents */
@@ -317,6 +285,46 @@
     transform: scale(1.2); /* Légère augmentation de la taille de l'icône */
 }
 
+.separator {
+    border: 0;
+    border-top: 2px solid #000;
+    margin: 15px 0;
+}
+
+.comment-internal {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.no-comments,
+.no-client-comment,
+.no-internal-comment {
+    color: #999;
+    font-style: italic;
+    font-size: 14px;
+}
+
+.comment-client b,
+.comment-internal b {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.comment-card p {
+    margin: 0;
+}
+
+.no-comments,
+.no-client-comment,
+.no-internal-comment b {
+    font-weight: normal;
+}
+
 .comment-blue {
     color: #1AC2DD;
     padding: 10px;
@@ -326,8 +334,6 @@
     width: 100%;
     box-sizing: border-box;
 }
-
-
 
 .comment-red {
     color: #FF0000;
@@ -339,3 +345,10 @@
     box-sizing: border-box;
 }
 
+.comment-green {
+    color: #00B050;
+}
+
+.comment-black {
+    color: #000000;
+}

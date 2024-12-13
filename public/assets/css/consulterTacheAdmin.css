@@ -343,3 +343,11 @@
     margin-bottom: 10px;
     font-size: 14px;
 }
+
+.comment-green {
+    color: #00B050;
+}
+
+.comment-black {
+    color: #000000;
+}

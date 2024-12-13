@@ -1,6 +1,6 @@
 <?php
-// src/Controller/GestionUserController.php
 
+// src/Controller/GestionUserController.php
 namespace App\Controller;
 
 use App\Repository\WebtaskRepository;
@@ -18,7 +18,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\ClientRepository;
 use App\Entity\Client;
 use App\Form\ClientType;
-
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class GestionClientController extends AbstractController
 {
@@ -26,7 +26,6 @@ class GestionClientController extends AbstractController
     private $entityManager;
     private $notificationRepository;
     private $clientRepository;
-
 
     public function __construct(
         WebtaskRepository $webTaskRepository,
@@ -76,6 +75,31 @@ class GestionClientController extends AbstractController
         if ($client->getLogo()) {
             $logo = base64_encode(stream_get_contents($client->getLogo()));
         }
+
+        $excludedId = 'e4e080b3758761bd01758f5fcfed03d9';
+
+        // Filtrer les clients par leur ID exclu
+        $filteredClients = array_filter($clients, function ($client) use ($excludedId) {
+            return $client->getId() !== $excludedId;
+        });
+
+        // Créer un tableau associatif avec les informations du client, y compris le logo encodé
+        $clientsData = [];
+        foreach ($filteredClients as $client) {
+            $logoBase64 = null;
+
+            // Si un logo est disponible, on l'encode en base64
+            if ($client->getLogo()) {
+                $logoBase64 = base64_encode(stream_get_contents($client->getLogo()));
+            }
+
+            $clientsData[] = [
+                'id' => $client->getId(),
+                'raisonSociale' => $client->getRaisonSociale(),
+                'webtaskOuvertureContact' => $client->isWebtaskOuvertureContact(),
+                'logoBase64' => $logoBase64, // Ajouter le logo encodé ici
+            ];
+        }
         
         // Récupérer les notifications visibles de l'utilisateur connecté
         $notifications = $notificationRepository->findBy([
@@ -84,7 +108,7 @@ class GestionClientController extends AbstractController
         ]);
 
         return $this->render('Admin/GestionClient.html.twig', [
-            'clients' => $clients,
+            'clients' => $clientsData,
             'currentUser' => $user,
             'logo' => $logo,
             'notifications' => $notifications,
@@ -124,11 +148,27 @@ class GestionClientController extends AbstractController
             'client' => $client,
             'notifications' => $notifications,
             'logo' => $logo,
-
-            
         ]);
     }
 
+    #[Route('/client/{id}/toggle-status', name: 'toggle_client_status', methods: ['POST'])]
+    public function toggleClientStatus(Client $client, Request $request): JsonResponse
+    {
+        $content = json_decode($request->getContent(), true);
+        $currentStatus = $content['status'] ?? null;
+
+        if ($currentStatus === null) {
+            return new JsonResponse(['success' => false, 'message' => 'Status manquant.'], 400);
+        }
+
+        $newStatus = $currentStatus == 1 ? 0 : 1;
+        $client->setWebtaskOuvertureContact($newStatus);
+
+        $this->entityManager->persist($client);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['success' => true, 'newStatus' => $newStatus]);
+    }
 
     #[Route('/notifications', name: 'get_notifications', methods: ['GET'])]
     public function getNotifications(): JsonResponse

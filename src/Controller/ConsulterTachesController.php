@@ -109,16 +109,17 @@ class ConsulterTachesController extends AbstractController
     
         $anciennesWebtasks = $this->webTaskRepository->findBy(['Webtask' => $webtask->getWebtask()]);
 
+        // Tri sur le libellé de la version et sur le filtre en croissant
         usort($anciennesWebtasks, function ($a, $b) {
-            // Comparaison sur le champ 'idversion' en décroissant
-            $idversionComparison = strcmp($a->getIdversion(), $b->getIdversion());
-        
-            if ($idversionComparison === 0) {
-                // Si 'idversion' est identique, on trie par 'filtre' en décroissant
+            // Comparaison sur le libellé de la version en croissant
+            $versionLibelleComparison = strcmp($a->getVersionLibelle(), $b->getVersionLibelle());
+            
+            if ($versionLibelleComparison === 0) {
+                // Si le libellé de la version est identique, on trie par le champ filtre en croissant
                 return strcmp($a->getFiltre(), $b->getFiltre());
             }
         
-            return $idversionComparison;
+            return $versionLibelleComparison;
         });
 
         // Récupérer la première webtask dans la liste triée

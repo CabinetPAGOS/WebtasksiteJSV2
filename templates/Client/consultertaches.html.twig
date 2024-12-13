@@ -179,7 +179,6 @@
 
 								<!-- Commentaire client -->
 								{% if task.commentaire_webtask_client is not empty %}
-									<hr class="separator">
 									<div class="comment-client {% if task.isPagosUser %} comment-green {% else %} comment-black {% endif %}">
 										<b><u>Commentaire client :</u></b>
 										<p>{{ task.commentaire_webtask_client|nl2br }}</p>

@@ -294,6 +294,7 @@
 .comment-internal {
     background-color: #fff;
     padding: 10px;
+    border-left: 4px solid #4caf50;
     border-radius: 5px;
     margin-bottom: 10px;
     font-size: 14px;
@@ -347,8 +348,18 @@
 
 .comment-green {
     color: #00B050;
+    padding: 10px;
+    border-left: 4px solid #4caf50;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
 }
 
 .comment-black {
     color: #000000;
+    padding: 10px;
+    border-left: 4px solid #4caf50;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
 }

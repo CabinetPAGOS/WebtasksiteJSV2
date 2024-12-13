@@ -17,8 +17,11 @@ $(document).ready(function () {
             }
         });
 
+        // Vide la barre de recherche lorsque des filtres sont appliqués
+        $('.custom-search-input').val('');
+
         updateActiveFilters(); // Met à jour l'affichage des filtres actifs
-        const query = $searchInput.val().trim(); // Récupère la requête de recherche
+        const query = $('.custom-search-input').val().trim(); // Récupère la requête de recherche
         filterTasks(query); // Applique les filtres
     };
 
@@ -26,7 +29,7 @@ $(document).ready(function () {
     window.applyAvancementFilters = function () {
         currentAvancements = [];
         let allAvancementsChecked = false;  // Si "Tous les avancements" est coché
-    
+
         $('.avancement-checkbox:checked').each(function () {
             const value = $(this).val();
             if (value === 'all') {
@@ -35,19 +38,22 @@ $(document).ready(function () {
                 currentAvancements.push(value); // Ajouter les autres filtres d'avancement
             }
         });
-    
+
         // Si "Tous les avancements" est coché, on ignore tous les autres filtres d'avancement
         if (allAvancementsChecked) {
             currentAvancements = ['0', '1', '2', '3', '4', '5', '6', '7'];
         }
-    
+
+        // Vide la barre de recherche lorsque des filtres sont appliqués
+        $('.custom-search-input').val('');
+
         // Met à jour l'affichage des filtres actifs
         updateActiveFilters();
-    
+
         // Récupère la requête de recherche
-        const query = $searchInput.val().trim();
+        const query = $('.custom-search-input').val().trim();
         filterTasks(query); // Applique les filtres
-    }; 
+    };
 
     // Fonction pour mettre à jour l'affichage des filtres actifs
     function updateActiveFilters() {
@@ -88,38 +94,50 @@ $(document).ready(function () {
     // Fonction pour filtrer les tâches
     function filterTasks(query = '') {
         const lowerCaseQuery = query.toLowerCase();
-    
-        $tasks.each(function () {
-            const $task = $(this);
-            const taskCode = ($task.data('code') || '').toString().toLowerCase();
-            const taskTitre = ($task.data('titre') || '').toString().toLowerCase();
-            const taskAvancement = ($task.data('avancement') || '0').toString();
-            const taskPilote = ($task.data('pilote') || '').toString();
-    
-            const isValidated = taskAvancement === '5'; // Vérifie si la tâche est validée
-            const matchesQuery = taskCode.includes(lowerCaseQuery) || taskTitre.includes(lowerCaseQuery);
-            const matchesAvancement = currentAvancements.length === 0 || currentAvancements.includes(taskAvancement);
-            const matchesPilote = currentPilotes.length === 0 || currentPilotes.includes(taskPilote);
 
-            // Si une recherche est active, afficher uniquement les résultats correspondant
-            if (query !== '') {
+        // Si une recherche est en cours, on applique la recherche en priorité
+        if (query !== '') {
+            $tasks.each(function () {
+                const $task = $(this);
+                const taskCode = ($task.data('code') || '').toString().toLowerCase();
+                const taskTitre = ($task.data('titre') || '').toString().toLowerCase();
+                const matchesQuery = taskCode.includes(lowerCaseQuery) || taskTitre.includes(lowerCaseQuery);
+
+                // Si la tâche correspond à la recherche, on l'affiche
                 if (matchesQuery) {
                     $task.removeClass('hidden');
                 } else {
                     $task.addClass('hidden');
                 }
-            } else {
-                // Applique les filtres combinés
+            });
+        } else {
+            // Si aucune recherche n'est effectuée, on applique les filtres d'avancement et de pilote
+            if (currentAvancements.length === 0 && currentPilotes.length === 0) {
+                $tasks.addClass('hidden');
+                updateTaskInfoText(); // Mise à jour du texte d'information
+                return; // Arrêter le processus de filtrage
+            }
+
+            $tasks.each(function () {
+                const $task = $(this);
+                const taskAvancement = ($task.data('avancement') || '0').toString();
+                const taskPilote = ($task.data('pilote') || '').toString();
+
+                const isValidated = taskAvancement === '5'; // Vérifie si la tâche est validée
+                const matchesAvancement = currentAvancements.length === 0 || currentAvancements.includes(taskAvancement);
+                const matchesPilote = currentPilotes.length === 0 || currentPilotes.includes(taskPilote);
+
+                // Applique les filtres d'avancement et de pilote
                 if (matchesAvancement && matchesPilote && (!isValidated || currentAvancements.includes('5'))) {
                     $task.removeClass('hidden');
                 } else {
                     $task.addClass('hidden');
                 }
-            }
-        });
+            });
+        }
 
         updateTaskInfoText(); // Met à jour le texte d'information des tâches visibles
-    }    
+    }   
 
     // Fonction pour mettre à jour le texte d'information
     function updateTaskInfoText() {

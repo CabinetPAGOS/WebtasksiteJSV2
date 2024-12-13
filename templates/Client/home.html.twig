@@ -20,16 +20,7 @@
 		<!-- Main Content -->
 		<div class="container-custom">
 			<div class="custom-rectangle">
-				{% set allowed_ids = ['e4e080b3758761bd01758f5fcfed03d9'] %}
-				{% if app.user.idclient and app.user.idclient.getId() in allowed_ids %}
-					<h2>
-						<b>TÂCHES EN ATTENTE</b>
-					</h2>
-				{% else %}
-					<h2>
-						<b>TÂCHES EN ATTENTE CLIENT</b>
-					</h2>
-				{% endif %}
+				<h2><b>TÂCHES STOP CLIENT</b></h2>
 				<div id="task-container" class="task-container">
 					{% if webtasks is not empty %}
 						{% for webtask in webtasks %}

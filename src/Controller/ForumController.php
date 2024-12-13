@@ -65,10 +65,7 @@ class ForumController extends AbstractController
             // Récupérer le client
             $client = $entityManager->getRepository(Client::class)->find($clientId);
             // Récupérer les forums du client
-            $forums = $this->forumRepository->findBy(
-                ['client' => $clientId],
-                ['date' => 'DESC']
-            );
+            $forums = $this->forumRepository->findBy(['client' => $clientId]);
         } else {
             throw $this->createNotFoundException('Aucun ID de client fourni.');
         }

@@ -65,7 +65,10 @@ class ForumController extends AbstractController
             // Récupérer le client
             $client = $entityManager->getRepository(Client::class)->find($clientId);
             // Récupérer les forums du client
-            $forums = $this->forumRepository->findBy(['client' => $clientId]);
+            $forums = $this->forumRepository->findBy(
+                ['client' => $clientId],
+                ['date' => 'DESC']
+            );
         } else {
             throw $this->createNotFoundException('Aucun ID de client fourni.');
         }
@@ -83,6 +86,7 @@ class ForumController extends AbstractController
                 $idWebtaskMap[$notification->getCodeWebtask()] = $idWebtask;
             }
         }
+        
         return $this->render('Admin/forum.html.twig', [
             'forums' => $forums, // Passer les résumés à la vue
             'client' => $client, // Passer le client à la vue

@@ -337,9 +337,12 @@ class HomeController extends AbstractController
         if (!$client) {
             throw $this->createNotFoundException('Client non trouvé');
         }
-
+        
         // Récupérer les forums associés à ce client
-        $forums = $this->forumRepository->findBy(['client' => $client]);
+        $forums = $this->forumRepository->findBy(
+            ['client' => $client],
+            ['date' => 'DESC']  // Tri par la date dans l'ordre décroissant
+        );
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');

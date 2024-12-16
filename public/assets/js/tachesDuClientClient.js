@@ -28,20 +28,21 @@ $(document).ready(function () {
     // Fonction pour appliquer les filtres d'avancement
     window.applyAvancementFilters = function () {
         currentAvancements = [];
-        let allAvancementsChecked = false;  // Si "Tous les avancements" est coché
 
-        $('.avancement-checkbox:checked').each(function () {
-            const value = $(this).val();
-            if (value === 'all') {
-                allAvancementsChecked = true;  // Si "Tous les avancements" est coché
-            } else if (value) {
-                currentAvancements.push(value); // Ajouter les autres filtres d'avancement
-            }
-        });
-
-        // Si "Tous les avancements" est coché, on ignore tous les autres filtres d'avancement
+        // Si "Tous les avancements" est coché
+        const allAvancementsChecked = $('.avancement-checkbox[value="all"]').is(':checked');
         if (allAvancementsChecked) {
+            // Coche toutes les cases
+            $('.avancement-checkbox').prop('checked', true);
             currentAvancements = ['0', '1', '2', '3', '4', '5', '6', '7'];
+        } else {
+            // Collecte les autres cases cochées
+            $('.avancement-checkbox:checked').each(function () {
+                const value = $(this).val();
+                if (value !== 'all') {
+                    currentAvancements.push(value);
+                }
+            });
         }
 
         // Vide la barre de recherche lorsque des filtres sont appliqués
@@ -165,8 +166,26 @@ $(document).ready(function () {
 
     // Gestion des changements dans les cases à cocher
     $('.avancement-checkbox').on('change', function () {
-        applyAvancementFilters();
-    });
+        const isAllCheckbox = $(this).val() === 'all';
+    
+        if (isAllCheckbox) {
+            const isChecked = $(this).is(':checked');
+    
+            // Si "Tous les avancements" est coché, cocher toutes les autres cases
+            $('.avancement-checkbox').prop('checked', isChecked);
+        } else {
+            // Si une autre option est décochée, décocher "Tous les avancements"
+            if (!$(this).is(':checked')) {
+                $('.avancement-checkbox[value="all"]').prop('checked', false);
+            } else {
+                // Vérifie si toutes les cases sont cochées après un changement manuel
+                const allChecked = $('.avancement-checkbox:not([value="all"])').length === $('.avancement-checkbox:not([value="all"]):checked').length;
+                $('.avancement-checkbox[value="all"]').prop('checked', allChecked);
+            }
+        }
+    
+        applyAvancementFilters(); // Appliquer les filtres après les changements
+    });    
 
     $('.pilote-checkbox').on('change', function () {
         applyPiloteFilters();
@@ -175,26 +194,25 @@ $(document).ready(function () {
     // Écouteur pour la barre de recherche
     $searchInput.on('input', function () {
         const query = $(this).val().trim();
-        
-        // Réinitialiser les filtres d'avancement et de pilotes
-        currentAvancements = [];
+
+        // Réinitialiser les filtres de pilotes
         currentPilotes = [];
-        
-        // Décoche toutes les cases à cocher de filtre
-        $('.avancement-checkbox').prop('checked', false);
         $('.pilote-checkbox').prop('checked', false);
 
+        // Cocher toutes les cases d'avancement automatiquement
+        currentAvancements = ['0', '1', '2', '3', '4', '5', '6', '7'];
+        $('.avancement-checkbox').prop('checked', true);
+
         // Met à jour l'affichage des filtres actifs
-        updateActiveFilters(); 
-        
-        // Applique la recherche sans les autres filtres
-        filterTasks(query); 
+        updateActiveFilters();
+
+        // Applique la recherche
+        filterTasks(query);
     });
 
-
-        // Initialisation : Masque toutes les tâches validées au chargement
-        filterTasks();
-        updateActiveFilters(); // Initialisation des filtres actifs
+    // Initialisation : Masque toutes les tâches validées au chargement
+    filterTasks();
+    updateActiveFilters(); // Initialisation des filtres actifs
 });
 
 

@@ -92,7 +92,6 @@ class HomeAdminController extends AbstractController
             return $webtask->getEtatDeLaWebtask() === 'ON';
         });
 
-
         // Convertir les dates en objets DateTime pour le tri
         usort($webtasks, function($a, $b) {
             $dateA = \DateTime::createFromFormat('d/m/Y', $a->getDateFinDemandee());
@@ -101,6 +100,20 @@ class HomeAdminController extends AbstractController
             // Comparer les objets DateTime
             return $dateA <=> $dateB;
         });
+
+        // Trouver la tâche la plus ancienne liée au même "webtask"
+        $webtasksWithEarliestDates = [];
+        foreach ($webtasksON as $webtaskON) {
+            $relatedTasks = $this->webTaskRepository->findBy(['libelle' => $webtaskON->getLibelle()]);
+            usort($relatedTasks, function ($a, $b) {
+                $dateA = $a->getCreeLe(); // Remplacez par votre méthode d'accès à la date "Créé le"
+                $dateB = $b->getCreeLe();
+                return $dateA <=> $dateB;
+            });
+            if (!empty($relatedTasks)) {
+                $webtasksWithEarliestDates[$webtaskON->getId()] = $relatedTasks[0]->getDateFinDemandee();
+            }
+        }
 
         // Appliquer le filtre par statut d'avancement si spécifié
         if ($selectedAvancement !== 'all') {
@@ -229,6 +242,7 @@ class HomeAdminController extends AbstractController
 
         return $this->render('Admin/homeadmin.html.twig', [
             'webtasks' => $webtasks,
+            'earliestDates' => $webtasksWithEarliestDates,
             'nonPrisesEnCompte' => $nonPrisesEnCompte,
             'priseEnCompte' => $priseEnCompte,
             'totalPriseEnCompteEtAmelioration' => $totalPriseEnCompteEtAmelioration,

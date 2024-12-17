@@ -131,9 +131,7 @@
 	{% if isPilote %}
 		<hr>
 		<div class="container-task">
-			<h1>
-				<b>MES TÂCHES</b>
-			</h1>
+			<h1><b>MES TÂCHES</b></h1>
 			{% if webtasks is not empty %}
 				<div class="container-task" id="taskContainer">
 					{% for webtask in webtasks %}
@@ -147,7 +145,14 @@
 								<ul>
 									<li><b><u>WebTask :</u></b> {{ webtask.webtask }}</li>
 									<li><b><u>Description :</u></b> {{ webtask.description|nl2br }}</li>    
-									<li><b><u>Date de fin demandée :</u></b> {{ webtask.datefinDemandee }}</li>
+									<li><b><u>Date de fin initiale :</u></b> 
+										{% if earliestDates[webtask.id] is defined %}
+											{{ earliestDates[webtask.id] }}
+										{% else %}
+											Non disponible
+										{% endif %}
+									</li>
+									<li><b><u>Date de fin prévue :</u></b> {{ webtask.datefinDemandee }}</li>
 									<li><b><u>Avancement de la tâche :</u></b> <span class="{{ webtask.mappedAvancement.class }}">{{ webtask.mappedAvancement.label }}</span></li>
 									<li><b><u>Créateur :</u></b>  {{ (webtask.iddemandeur.prenom[:1] ~ '. ' ~ webtask.iddemandeur.nom)|upper }}</li>
 									<li><b><u>Responsable :</u></b> {{ (webtask.responsable.prenom[:1] ~ '. ' ~ webtask.responsable.nom)|upper }}</li>
@@ -156,7 +161,6 @@
 								</ul>
 								<div class="btn-group" role="group">
 									<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertaches', { 'id': webtask.code }) }}'">CONSULTER</button>
-									{# <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitaches', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button> #}
 								</div>
 							</div>
                     	{% endif %}
@@ -167,15 +171,6 @@
 			{% endif %}
 		</div>
 	{% endif %}
-
-	<hr>
-
-	<!-- Center Button -->
-	<div class="center-button">
-		<a href="{{ path('app_tachesadmin') }}" class="btn btn-secondary consulter rounded">
-			<b>VOIR TOUTES LES TÂCHES</b>
-		</a>
-	</div>
 
 	<!-- SCRIPT JS -->
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>

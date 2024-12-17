@@ -170,6 +170,20 @@ class HomeController extends AbstractController
             return $dateA <=> $dateB;
         });
 
+        // Trouver la tâche la plus ancienne liée au même "webtask"
+        $webtasksWithEarliestDates = [];
+        foreach ($webtasksON as $webtaskON) {
+            $relatedTasks = $this->webTaskRepository->findBy(['libelle' => $webtaskON->getLibelle()]);
+            usort($relatedTasks, function ($a, $b) {
+                $dateA = $a->getCreeLe(); // Remplacez par votre méthode d'accès à la date "Créé le"
+                $dateB = $b->getCreeLe();
+                return $dateA <=> $dateB;
+            });
+            if (!empty($relatedTasks)) {
+                $webtasksWithEarliestDates[$webtaskON->getId()] = $relatedTasks[0]->getDateFinDemandee();
+            }
+        }
+
         // Mapper les tags et l'avancement des tâches
         $webtasks = array_map(function ($webtask) {
             $tagValue = $webtask->getTag();
@@ -253,8 +267,6 @@ class HomeController extends AbstractController
             return $a->getDateFinDemandee() <=> $b->getDateFinDemandee();
         });
 
-
-
         $lastModifiedStopClientWebtasks = array_slice($lastModifiedStopClientWebtasks, 0, 3);
 
         // Vérifier le mode maintenance
@@ -278,6 +290,7 @@ class HomeController extends AbstractController
 
         return $this->render('Client/home.html.twig', [
             'webtasks' => $webtasks,
+            'earliestDates' => $webtasksWithEarliestDates,
             'nonPrisesEnCompte' => $nonPrisesEnCompte,
             'priseEnCompte' => $priseEnCompte,
             'totalPriseEnCompteEtAmelioration' => $totalPriseEnCompteEtAmelioration,

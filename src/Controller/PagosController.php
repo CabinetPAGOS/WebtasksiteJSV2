@@ -1,6 +1,6 @@
 <?php
-// src/Controller/PagosController.php
 
+// src/Controller/PagosController.php
 namespace App\Controller;
 
 use App\Repository\WebtaskRepository;
@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ClientRepository;
-
 
 class PagosController extends AbstractController
 {
@@ -142,6 +141,20 @@ class PagosController extends AbstractController
             return $dateA <=> $dateB;
         });
 
+        // Trouver la tâche la plus ancienne liée au même "webtask"
+        $webtasksWithEarliestDates = [];
+        foreach ($webtasksON as $webtaskON) {
+            $relatedTasks = $this->webTaskRepository->findBy(['libelle' => $webtaskON->getLibelle()]);
+            usort($relatedTasks, function ($a, $b) {
+                $dateA = $a->getCreeLe(); // Remplacez par votre méthode d'accès à la date "Créé le"
+                $dateB = $b->getCreeLe();
+                return $dateA <=> $dateB;
+            });
+            if (!empty($relatedTasks)) {
+                $webtasksWithEarliestDates[$webtaskON->getId()] = $relatedTasks[0]->getDateFinDemandee();
+            }
+        }
+
         // Préparation des données pour chaque tâche
         $webtasksON = array_map(function($webtask) {
             $idVersion = $webtask->getIdversion();
@@ -177,16 +190,16 @@ class PagosController extends AbstractController
         }
 
         return $this->render('Client/taches.html.twig', [
-            'webtasks' => $webtasksON, // Renvoie les webtasks filtrés
+            'webtasks' => $webtasksON,
+            'earliestDates' => $webtasksWithEarliestDates,
             'query' => $query,
-            'selectedAvancement' => $selectedAvancement, // Passe `selectedAvancement` au template
+            'selectedAvancement' => $selectedAvancement,
             'pilotes' => $pilotes,
             'filterByPilote' => $filterByPilote,
             'logo' => $logo,
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
             'client' => $client,
-
         ]);
     }
 

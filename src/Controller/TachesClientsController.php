@@ -63,7 +63,6 @@ class TachesClientsController extends AbstractController
         // Récupérer les Webtasks associées à cet ID client
         $webtasks = $this->webTaskRepository->findBy(['idclient' => $clientId]);
 
-
         // Récupérer le logo du client
         $logo = null;
         if ($client->getLogo()) {
@@ -149,6 +148,20 @@ class TachesClientsController extends AbstractController
             return $dateA <=> $dateB;
         });
 
+        // Trouver la tâche la plus ancienne liée au même "webtask"
+        $webtasksWithEarliestDates = [];
+        foreach ($webtasksON as $webtaskON) {
+            $relatedTasks = $this->webTaskRepository->findBy(['libelle' => $webtaskON->getLibelle()]);
+            usort($relatedTasks, function ($a, $b) {
+                $dateA = $a->getCreeLe(); // Remplacez par votre méthode d'accès à la date "Créé le"
+                $dateB = $b->getCreeLe();
+                return $dateA <=> $dateB;
+            });
+            if (!empty($relatedTasks)) {
+                $webtasksWithEarliestDates[$webtaskON->getId()] = $relatedTasks[0]->getDateFinDemandee();
+            }
+        }
+
         // Préparation des données pour chaque tâche
         $webtasksON = array_map(function ($webtask) {
             $idVersion = $webtask->getIdversion();
@@ -185,6 +198,7 @@ class TachesClientsController extends AbstractController
 
         return $this->render('Client/tachesclients.html.twig', [
             'webtasks' => $webtasksON,
+            'earliestDates' => $webtasksWithEarliestDates,
             'query' => $query,
             'selectedAvancement' => $selectedAvancement,
             'pilotes' => $pilotes,

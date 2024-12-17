@@ -3,6 +3,7 @@
 // src/Controller/TachesAdminController.php
 namespace App\Controller;
 
+use App\Entity\Webtask;
 use App\Entity\Notification;
 use App\Repository\WebtaskRepository;
 use App\Repository\NotificationRepository;
@@ -160,6 +161,20 @@ class TachesAdminController extends AbstractController
             return $dateA <=> $dateB;
         });
 
+        // Trouver la tâche la plus ancienne liée au même "libellé"
+        $webtasksWithEarliestDates = [];
+        foreach ($webtasksON as $webtaskON) {
+            $relatedTasks = $this->webTaskRepository->findBy(['libelle' => $webtaskON->getLibelle()]);
+            usort($relatedTasks, function ($a, $b) {
+                $dateA = $a->getCreeLe(); // Remplacez par votre méthode d'accès à la date "Créé le"
+                $dateB = $b->getCreeLe();
+                return $dateA <=> $dateB;
+            });
+            if (!empty($relatedTasks)) {
+                $webtasksWithEarliestDates[$webtaskON->getId()] = $relatedTasks[0]->getDateFinDemandee();
+            }
+        }
+
         // Préparation des données pour chaque tâche
         $webtasksON = array_map(function ($webtask) {
             $idVersion = $webtask->getIdversion();
@@ -195,9 +210,10 @@ class TachesAdminController extends AbstractController
         }
 
         return $this->render('Admin/tachesadmin.html.twig', [
-            'webtasks' => $webtasksON, // Renvoie les webtasks filtrés
+            'webtasks' => $webtasksON, 
+            'earliestDates' => $webtasksWithEarliestDates,
             'query' => $query,
-            'selectedAvancement' => $selectedAvancement, // Passe `selectedAvancement` au template
+            'selectedAvancement' => $selectedAvancement,
             'pilotes' => $pilotes,
             'filterByPilote' => $filterByPilote,
             'logo' => $logo,

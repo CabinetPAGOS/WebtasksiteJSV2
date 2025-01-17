@@ -1,54 +1,88 @@
 // GESTION DU FORUM
-document.getElementById('submit-summary').addEventListener('click', function () {
-    const summaryText = document.getElementById('summary-text').value;
-    
-    // Récupérer l'ID du client depuis l'attribut data
-    const clientInfo = document.getElementById('client-info');
-    const clientId = clientInfo.dataset.clientId;
-    
-    if (!clientId) {
-        console.error('Erreur : l\'ID du client est introuvable.');
-        alert('Impossible de récupérer l\'ID du client.');
-        return;
+document.addEventListener("DOMContentLoaded", () => {
+    const forumItems = document.querySelectorAll('.forum-badge');
+    const forumContentDisplay = document.getElementById('forum-content-display');
+
+    // Afficher le dernier forum créé par défaut
+    if (forumItems.length > 0) {
+        const firstForum = forumItems[0];
+        firstForum.classList.add('active');
+        loadForumDetails(firstForum);
     }
 
-    if (summaryText) {
-        fetch(`/client/${clientId}/forum`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({content: summaryText})
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP : ${response.status}`);
-            }
-            return response.json();
-        }).then(data => {
-            if (data.content && data.date) { 
-                // Ajout du résumé à la liste affichée
-                const newEntry = document.createElement('div');
-                newEntry.classList.add('forum-entry', 'mb-4');
-                newEntry.innerHTML = `
-                    <p><strong>Date :</strong> ${new Date(data.date).toLocaleString()}</p>
-                    <pre class="forum-content">${data.content}</pre>
-                    <hr>`;
-                document.getElementById('forum-contents').appendChild(newEntry);
-
-                // Réinitialise le champ texte
-                document.getElementById('summary-text').value = ''; 
-            } else {
-                alert('Erreur lors de l\'ajout du résumé.');
-            }
-        })
-        .catch(error => {
-            console.error('Erreur détectée :', error);
-            alert('Une erreur est survenue : ' + error.message);
+    // Écouter les clics sur les badges des forums
+    forumItems.forEach(item => {
+        item.addEventListener('click', () => {
+            forumItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            loadForumDetails(item);
         });
-    } else {
-        alert('Veuillez entrer un résumé avant de l\'envoyer.');
+    });
+
+    // Charger les détails du forum sélectionné
+    function loadForumDetails(item) {
+        const forumId = item.getAttribute('data-forum-id');
+
+        fetch(`/admin/forum/details/${forumId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    forumContentDisplay.innerHTML = `
+                        <div class="forum-entry">
+                            <p><strong>Titre :</strong> ${data.forum.titre}</p>
+                            <p><strong>Date :</strong> ${data.forum.date}</p>
+                            <pre class="forum-content">${data.forum.content}</pre>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des détails du forum:', error);
+                alert('Une erreur est survenue lors du chargement du forum. Veuillez réessayer.');
+            });
     }
+
+    // Soumettre le formulaire pour créer un nouveau forum
+    document.getElementById("submit-forum").addEventListener("click", async () => {
+        const title = document.getElementById("forum-title").value.trim();
+        const content = document.getElementById("forum-content").value.trim();
+        const clientId = document.getElementById("client-info").dataset.clientId;
+
+        if (!title || !content) {
+            alert("Veuillez remplir tous les champs.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/admin/forum/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: title,
+                    content: content,
+                    clientId: clientId,
+                }),
+            });
+
+            if (response.ok) {
+                alert("Forum créé avec succès !");
+                location.reload();
+            } else {
+                const error = await response.json();
+                alert("Erreur : " + error.message);
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'envoi des données :", error);
+            alert("Une erreur s'est produite. Veuillez réessayer.");
+        }
+    });
 });
 
 

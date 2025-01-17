@@ -65,9 +65,7 @@ class ForumController extends AbstractController
             // Récupérer le client
             $client = $entityManager->getRepository(Client::class)->find($clientId);
             // Récupérer les forums du client
-            $forums = $this->forumRepository->findBy(['client' => $clientId]);
-        } else {
-            throw $this->createNotFoundException('Aucun ID de client fourni.');
+            $forums = $this->forumRepository->findBy(['client' => $clientId], ['date' => 'DESC']);
         }
 
         $notifications = $notificationRepository->findBy([
@@ -92,6 +90,64 @@ class ForumController extends AbstractController
             'logo' => $logo,
             'idWebtaskMap' => $idWebtaskMap,
         ]);
+    }
+
+    #[Route('/admin/forum/details/{id}', name: 'app_adminforum_details', methods: ['GET'])]
+    public function forumDetails(int $id, EntityManagerInterface $entityManager): Response
+    {
+        // Récupérer le forum par son ID
+        $forum = $entityManager->getRepository(Forum::class)->find($id);
+
+        // Si le forum n'existe pas
+        if (!$forum) {
+            return $this->json(['success' => false, 'message' => 'Forum non trouvé'], 404);
+        }
+
+        // Retourner les détails du forum sous forme de JSON
+        return $this->json([
+            'success' => true,
+            'forum' => [
+                'id' => $forum->getId(),
+                'titre' => $forum->getTitre(),
+                'content' => $forum->getContent(),
+                'date' => $forum->getDate()->format('d/m/Y H:i'),
+                'auteur' => $forum->getAuteur()->getNom(),
+            ]
+        ]);
+    }
+
+    #[Route('/admin/forum/create', name: 'app_adminforum_create', methods: ['POST'])]
+    public function createForum(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['message' => 'Utilisateur non authentifié'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['title'], $data['content'], $data['clientId'])) {
+            return new JsonResponse(['message' => 'Données invalides'], 400);
+        }
+
+        $client = $entityManager->getRepository(Client::class)->find($data['clientId']);
+
+        if (!$client) {
+            return new JsonResponse(['message' => 'Client non trouvé'], 404);
+        }
+
+        $forum = new Forum();
+        $forum->setTitre($data['title']);
+        $forum->setContent($data['content']);
+        $forum->setClient($client);
+        $forum->setAuteur($user);
+        $forum->setDate(new \DateTime());
+
+        $entityManager->persist($forum);
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Forum créé avec succès']);
     }
 
     #[Route('/admin/forum/edit/{id}/{clientId}', name: 'app_adminforum_edit', methods: ['GET', 'POST'])]

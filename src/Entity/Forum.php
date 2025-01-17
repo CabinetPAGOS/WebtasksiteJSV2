@@ -14,6 +14,10 @@ class Forum
     #[ORM\Column(type: 'integer')]
     private int $id;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: "Le titre ne peut pas être vide.")]
+    private string $titre;
+
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: "Le contenu ne peut pas être vide.")]
     private string $content;
@@ -24,6 +28,10 @@ class Forum
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'forums')]
     #[ORM\JoinColumn(nullable: false)]
     private Client $client;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "auteur_id", referencedColumnName: "id", nullable: false)]
+    private ?User $auteur;
 
     public function __construct()
     {
@@ -36,6 +44,18 @@ class Forum
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+
+    public function setTitre(string $titre): self
+    {
+        $this->titre = $titre;
+
+        return $this;
     }
 
     public function getContent(): ?string
@@ -73,4 +93,16 @@ class Forum
 
         return $this;
     }
-} 
+
+    public function getAuteur(): ?User
+    {
+        return $this->auteur;
+    }
+
+    public function setAuteur(?User $auteur): self
+    {
+        $this->auteur = $auteur;
+
+        return $this;
+    }
+}

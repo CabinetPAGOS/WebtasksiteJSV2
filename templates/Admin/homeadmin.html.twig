@@ -29,7 +29,6 @@
 									</h3>
 									<div class="btn-group" role="group">
 										<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertachesadmin', { 'id': webtask.code }) }}'">CONSULTER</button>
-										{# <button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitachesadmin', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button> #}
 										{% set allowed_ids = ['e4e080b3758761bd01758f5fcfed03d9'] %}
 										{% if app.user.idclient and app.user.idclient.getId() not in allowed_ids %}
 											<button type="button" class="btn btn-secondary repondre consulter rounded" onclick="window.location.href='{{ path('app_reponsetachesadmin', { 'id': webtask.id }) }}'">RÉPONDRE</button>

@@ -84,7 +84,6 @@
                         </ul>
 						<div class="btn-group" role="group">
 							<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_consultertaches', { 'id': webtask.code }) }}'">CONSULTER</button>
-							<!--<button type="button" class="btn btn-secondary consulter rounded" onclick="window.location.href='{{ path('app_suivitaches', { 'id': webtask.id }) }}'">VOIR LE SUIVI</button>-->
 							{% if app.user.roleWx == 'createur' %}
 								{% set allowed_ids = ['e4e080b3758761bd01758f5fcfed03d9'] %}
 								{% if app.user.idclient and app.user.idclient.getId() not in allowed_ids %}

@@ -116,8 +116,9 @@
                                                         </div>
                                                         <div class="notification-buttons">
                                                             <button class="btn-read mark-as-read" data-id="{{ notification.id }}">Marquer comme lu</button>
-                                                            {% set idWebtask = idWebtaskMap[notification.codeWebtask] %}
-                                                            <button class="btn-view" onclick="window.location.href='{{ path('app_consultertaches', { 'id': notification.codeWebtask }) }}'">Consulter</button>
+                                                            {% if notification.codeWebtask %}
+                                                                <button class="btn-view" onclick="window.location.href='{{ path('app_consultertaches', { 'id': notification.codeWebtask }) }}'">Consulter</button>
+                                                            {% endif %}
                                                         </div>
                                                     </li>
                                                 {% endfor %}

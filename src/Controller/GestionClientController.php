@@ -107,6 +107,22 @@ class GestionClientController extends AbstractController
             'visible' => true
         ]);
 
+        foreach ($notifications as $notification) {
+            // Récupérer le libellé de la notification
+            $libelleNotification = $notification->getLibelleWebtask();
+            
+            // Trouver la webtask ON correspondante au libellé de la notification
+            $webtaskOn = $this->webTaskRepository->findOneBy([
+                'libelle' => $libelleNotification,
+                'etat_de_la_webtask' => 'ON'
+            ]);
+        
+            // Si la webtask ON existe, ajouter le lien
+            if ($webtaskOn) {
+                $notification->setCodeWebtask($webtaskOn->getCode());
+            }
+        }
+
         return $this->render('Admin/GestionClient.html.twig', [
             'clients' => $clientsData,
             'currentUser' => $user,

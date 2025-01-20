@@ -64,3 +64,17 @@ DirectoryIndex index.php
         RedirectMatch 307 ^/$ /index.php/
     </IfModule>
 </IfModule> 
+
+# Pour une application Symfony, vous devez stocker ce .htaccess
+# dans le même répertoire que votre contrôleur d'entrée, index.php.
+
+# Utilisez le contrôleur d'entrée comme fichier index.
+#DirectoryIndex index.php
+
+#<IfModule mod_rewrite.c>
+    #RewriteEngine On
+
+    # Rediriger tout le trafic vers la page de maintenance
+    #RewriteCond %{REQUEST_URI} !^/maintenance\.html\.twig$
+    #RewriteRule ^.*$ /maintenance.html.twig [R=302,L]
+#</IfModule>

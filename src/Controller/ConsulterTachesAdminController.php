@@ -27,7 +27,6 @@ class ConsulterTachesAdminController extends AbstractController
     private $notificationRepository;
     private $clientRepository;
 
-
     public function __construct(
         WebtaskRepository $webTaskRepository,
         UserRepository $userRepository,
@@ -87,6 +86,22 @@ class ConsulterTachesAdminController extends AbstractController
             'user' => $user->getId(),
             'visible' => true
         ]);
+
+        foreach ($notifications as $notification) {
+            // Récupérer le libellé de la notification
+            $libelleNotification = $notification->getLibelleWebtask();
+            
+            // Trouver la webtask ON correspondante au libellé de la notification
+            $webtaskOn = $this->webTaskRepository->findOneBy([
+                'libelle' => $libelleNotification,
+                'etat_de_la_webtask' => 'ON'
+            ]);
+        
+            // Si la webtask ON existe, ajouter le lien
+            if ($webtaskOn) {
+                $notification->setCodeWebtask($webtaskOn->getCode());
+            }
+        }
 
         // Créer un tableau pour lier codeWebtask à id
         $idWebtaskMap = [];
@@ -266,7 +281,6 @@ class ConsulterTachesAdminController extends AbstractController
                 'commentaire_interne_pagos' => $task->getCommentaireInternePagos(),
                 'isPagosUser' => $isPagosUser,
                 'client' => $client,
-
             ];
         }
 
@@ -316,7 +330,6 @@ class ConsulterTachesAdminController extends AbstractController
             'notifications' => $notifications,
             'idWebtaskMap' => $idWebtaskMap,
             'client' => $client,
-
         ]);
     }
 
